@@ -46,13 +46,15 @@ class Leafy:
         return self._node_by_id[node_id]
 
     def get_depends(self, node_id):
+        """Return a generator of the dependencies of a node"""
         return (self[d_id] for d_id in self._node_depends[node_id])
 
-    def pop(self, node_id):
-        pass
-
-    def apply(self):
-        pass
+    def expire_parents(self, node_id):
+        """Expire all the parents of a node"""
+        for parent_id, children_ids in self._node_depends.items():
+            if node_id in children_ids:
+                self[parent_id].expire()
+                self.expire_parents(parent_id)
 
 
 class Node:
@@ -75,12 +77,11 @@ class Node:
         """Get the value of the node."""
         if self._shifted:
             if self._shifted_builder:
-                self._shifted_value = self._build_from_depends(self._shifted_builder)
+                self.shift(self._build_from_depends(self._shifted_builder))
             return self._shifted_value
         if self._expired:
             if self._builder is not None:
-                self._value = self._build_from_depends(self._builder)
-                self._expired = False
+                self.set_value(self._build_from_depends(self._builder))
         return self._value
 
     def _build_from_depends(self, func):
@@ -100,6 +101,7 @@ class Node:
         """Temporarely change the value of the node to a new value"""
         self._shifted_value = value
         self._shifted = True
+        self._dag.expire_parents(self.id)
 
     def shifted_builder(self, shifted_builder):
         """Temporeraly change the builder function to a shifted builder"""
@@ -110,6 +112,7 @@ class Node:
         """Permenantly change the value of the node to a new value."""
         self._value = value
         self._expired = False
+        self._dag.expire_parents(self.id)
 
     def expire(self):
         """Expire the value of the node and force it to recalculate"""

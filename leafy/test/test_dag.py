@@ -95,3 +95,8 @@ class LeafyTestCase(TestCase):
         n2 = dag.add(13)
         n3 = dag.add(lambda x,y: x+y, depends=[n1, n2])
         self.assertEqual(25, n3.value)
+        self.assertEqual([n1, n2], list(dag.get_depends(n3.id)))
+        n1.set_value(15)
+        self.assertEqual(28, n3.value)
+
+
