@@ -68,7 +68,12 @@ class Node:
 
     @property
     def value(self):
-        if self._builder is not None:
+        """Get the value of the node."""
+        if self._shifted:
+            return self._shifted_value
+        if self._value:
+            return self._value
+        elif self._builder is not None:
             depends = [d.value for d in self._dag.get_depends(self.id)]
             self._value = self._builder(*depends)
             self._expired = False
@@ -76,18 +81,29 @@ class Node:
 
     @property
     def id(self):
+        """Get the id of the node."""
         return self._id
 
+    @property
+    def is_shifted(self):
+        return self._shifted
+
     def shift(self, value):
-        pass
+        """Temporarely change the value of the node to a new value"""
+        self._shifted_value = value
+        self._shifted = True
 
     def set_value(self, value):
-        pass
+        """Permenantly change the value of the node to a new value."""
+        self._value = value
 
     def expire(self):
+        """Expire the value of the node and force it to recalculate"""
         pass
 
     def reset(self):
-        pass
+        """If the node is shifted reset it to it's original value"""
+        self._shifted_value = None
+        self._shifted = False
 
 
