@@ -20,6 +20,10 @@ class NodeTestCase(TestCase):
 
         return Node(dag, 'sum', builder=builder)
 
+    def test_creation_with_builder_and_value(self):
+        with self.assertRaises(AttributeError):
+            _ = Node(Mock(), 'a', lambda x: 1, 12)
+
     def test_id(self):
         n1 = Node(Mock(), 'a')
         self.assertEqual('a', n1.id)
