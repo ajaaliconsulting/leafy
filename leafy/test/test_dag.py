@@ -51,17 +51,30 @@ class NodeTestCase(TestCase):
         nsum.reset()
         self.assertEqual(25, nsum.value)
 
+    def test_set_value(self):
+        n1 = self.mock_node()
+        self.assertEqual(12, n1.value)
+        n1.set_value(24)
+        self.assertEqual(24, n1.value)
+        n1.expire()
+        self.assertEqual(24, n1.value)
 
+        # Tests with builder
+        nsum = self.mock_sum_node()
+        self.assertEqual(25, nsum.value)
+        nsum.set_value(12)
+        self.assertEqual(12, nsum.value)
+        nsum.expire()
+        self.assertEqual(25, nsum.value)
 
-
-
-
-
-
-
-
-
-
+    def test_set_shifted_builder(self):
+        nsum = self.mock_sum_node()
+        self.assertEqual(25, nsum.value)
+        shifted_builder = lambda x, y: x * y
+        nsum.shifted_builder(shifted_builder)
+        self.assertEqual(156, nsum.value)
+        nsum.reset()
+        self.assertEqual(25, nsum.value)
 
 
 class LeafyTestCase(TestCase):

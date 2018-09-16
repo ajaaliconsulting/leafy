@@ -58,11 +58,15 @@ class Leafy:
 class Node:
 
     def __init__(self, dag, node_id, builder=None, value=None):
+        if builder is not None and value is not None:
+            raise AttributeError("You must either supply a builder or a value not both.")
+
         self._dag = dag
         self._id = node_id
         self._value = value
-        self._shifted_value = None
         self._builder = builder
+        self._shifted_value = None
+        self._shifted_builder = None
         self._expired = True
         self._shifted = False
 
@@ -70,14 +74,18 @@ class Node:
     def value(self):
         """Get the value of the node."""
         if self._shifted:
+            if self._shifted_builder:
+                self._shifted_value = self._build_from_depends(self._shifted_builder)
             return self._shifted_value
-        if self._value:
-            return self._value
-        elif self._builder is not None:
-            depends = [d.value for d in self._dag.get_depends(self.id)]
-            self._value = self._builder(*depends)
-            self._expired = False
+        if self._expired:
+            if self._builder is not None:
+                self._value = self._build_from_depends(self._builder)
+                self._expired = False
         return self._value
+
+    def _build_from_depends(self, func):
+        depends = [d.value for d in self._dag.get_depends(self.id)]
+        return func(*depends)
 
     @property
     def id(self):
@@ -93,17 +101,26 @@ class Node:
         self._shifted_value = value
         self._shifted = True
 
+    def shifted_builder(self, shifted_builder):
+        """Temporeraly change the builder function to a shifted builder"""
+        self._shifted_builder = shifted_builder
+        self._shifted = True
+
     def set_value(self, value):
         """Permenantly change the value of the node to a new value."""
         self._value = value
+        self._expired = False
 
     def expire(self):
         """Expire the value of the node and force it to recalculate"""
-        pass
+        if self._builder is not None:
+            self._value = None
+        self._expired = True
 
     def reset(self):
         """If the node is shifted reset it to it's original value"""
         self._shifted_value = None
+        self._shifted_builder = None
         self._shifted = False
 
 
