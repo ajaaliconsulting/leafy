@@ -81,7 +81,7 @@ class NodeTestCase(TestCase):
         self.assertEqual(25, nsum.value)
 
 
-class LeafyTestCase(TestCase):
+class DagTestCase(TestCase):
 
     def test_dag_creation_with_leafs(self):
         dag = Leafy()
