@@ -104,7 +104,7 @@ class Graph:
             ['st'] + self._st,
             ['colour'] + self._colour
         ]
-        print(tabulate(table, headers=[''] + self.ordered_nodes))
+        print(tabulate(table, headers=[''] + [f"{i[1]} ({i[0]})" for i in self.ordered_nodes]))
         print("Edge Count:", self._edge_count)
 
         two_colourability = True
