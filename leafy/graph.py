@@ -116,7 +116,6 @@ class Graph:
                 else:
                     self._parent_links[idx].append(depend_idx)
 
-
         self._post[idx] = self._post_counter
         self._post_counter += 1
 
@@ -159,4 +158,3 @@ class Graph:
                 if self._st[idx] is not None:
                     bridges.append((self._st[idx], idx))
         print("Bridges:", bridges)
-
