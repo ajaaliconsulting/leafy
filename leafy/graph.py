@@ -51,7 +51,6 @@ class Graph:
         self._values[node_id] = value
 
     def simple_path(self, node_id_1, node_id_2):
-        idx_n1 = self._index[node_id_1]
         idx_n2 = self._index[node_id_2]
         path = []
 
@@ -59,10 +58,9 @@ class Graph:
 
         st = self._st[idx_n2]
         path.append(idx_n2)
-        while st != idx_n1:
+        while st is not None:
             path.append(st)
             st = self._st[st]
-        path.append(st)
 
         return [self.ordered_nodes[p][1] for p in reversed(path)]
 
