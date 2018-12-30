@@ -30,6 +30,8 @@ class DFS:
         self._lows = [None] * self._len  # lowest preordering index
         self._cycle = [None] * self._len
         self._colour = [None] * self._len
+        self._art = [None] * self._len
+        self._bridges = []
         self._pre_counter = 0
         self._post_counter = 0
         self._edge_count = 0
@@ -73,6 +75,9 @@ class DFS:
                 self.run(depend, idx, abs(clr - 1))
                 self._lows[idx] = min(self._lows[idx], self._lows[depend_idx])
 
+                if self._lows[depend_idx] >= self._pre[idx]:
+                    self._art[idx] = 1
+
             else:
 
                 if self._pre[idx] < self._pre[depend_idx]:
@@ -85,6 +90,12 @@ class DFS:
                 else:
                     self._parent_links[idx].append(depend_idx)
 
+        if self._pre[idx] == 0 and len(self._tree_links) > 1:
+            self._art[idx] = 1
+
+        if self._pre[idx] == self._lows[idx] and st is not None:
+            self._bridges.append((st, idx))
+
         self._post[idx] = self._post_counter
         self._post_counter += 1
 
@@ -95,6 +106,7 @@ class DFS:
             ['lows'] + self._lows,
             ['post'] + self._post,
             ['st'] + self._st,
+            ['art'] + self._art,
             ['colour'] + self._colour
 
         ]
@@ -121,13 +133,7 @@ class DFS:
         print("Parentinks:", dict(self._parent_links))
         print("DownLinks:", dict(self._down_links))
         print("BackLinks:", dict(self._back_links))
-
-        bridges = []
-        for n, idx in self._index.items():
-            if self._pre[idx] == self._lows[idx]:
-                if self._st[idx] is not None:
-                    bridges.append((self._ordered_nodes[self._st[idx]], n))
-        print("Bridges:", bridges)
+        print("Bridges:", self._bridges)
 
 
 class BFS(DFS):
