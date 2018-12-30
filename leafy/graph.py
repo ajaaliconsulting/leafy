@@ -3,6 +3,7 @@ Purpose:
 *.
 """
 from collections import defaultdict
+from queue import Queue
 
 from tabulate import tabulate
 
@@ -45,12 +46,9 @@ class DFS:
             ordered_nodes.append(node)
         return index, ordered_nodes
 
-    def simple_path(self, node_id_1, node_id_2):
-        idx_n2 = self._index[node_id_2]
+    def simple_path(self, to_node):
+        idx_n2 = self._index[to_node]
         path = []
-
-        self.run(node_id_1)
-
         st = self._st[idx_n2]
         path.append(idx_n2)
         while st is not None:
@@ -59,15 +57,15 @@ class DFS:
 
         return [self._ordered_nodes[p] for p in reversed(path)]
 
-    def run(self, node_id, st=None, clr=0):
-        idx = self._index[node_id]
+    def run(self, node, st=None, clr=0):
+        idx = self._index[node]
         self._st[idx] = st
         self._colour[idx] = clr
         self._pre[idx] = self._pre_counter
         self._lows[idx] = self._pre_counter
         self._pre_counter += 1
 
-        for depend in self._graph.edges[node_id]:
+        for depend in self._graph.edges[node]:
             depend_idx = self._index[depend]
             self._edge_count += 1
             if self._pre[depend_idx] is None:
@@ -130,3 +128,34 @@ class DFS:
                 if self._st[idx] is not None:
                     bridges.append((self._ordered_nodes[self._st[idx]], n))
         print("Bridges:", bridges)
+
+
+class BFS(DFS):
+    def __init__(self, graph):
+        super().__init__(graph)
+        self._queue = Queue()
+
+    def run(self, node):
+        self._queue.put(node)
+
+        while not self._queue.empty():
+            node = self._queue.get()
+            idx = self._index[node]
+            self._pre[idx] = self._pre_counter
+            self._pre_counter += 1
+
+            for depend in self._graph.edges[node]:
+                depend_idx = self._index[depend]
+                self._edge_count += 1
+                if self._pre[depend_idx] is None:
+                    self._st[depend_idx] = idx
+                    self._tree_links[idx].append(depend_idx)
+                    self._queue.put(depend)
+                else:
+                    if self._pre[idx] < self._pre[depend_idx]:
+                        self._down_links[idx].append(depend_idx)
+                    else:
+                        self._back_links[idx].append(depend_idx)
+
+                    if depend_idx == idx:
+                        self._parent_links[idx].append(depend_idx)
