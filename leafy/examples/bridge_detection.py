@@ -2,22 +2,26 @@
 Purpose:
 *.
 """
-from leafy.graph import Graph
+from leafy.graph import Graph, DFS
 
 g = Graph()
-g.add(0, [5, 1, 6])
-g.add(1, [2])
-g.add(2, [6])
-g.add(3, [4])
-g.add(4, [9, 11])
-g.add(5, [4, 3])
-g.add(6, [7])
-g.add(7, [8, 10])
-g.add(8, [10])
-g.add(9, [11])
-g.add(10)
-g.add(11, [12])
-g.add(12)
+g.add_edge(0, 5)
+g.add_edge(0, 1)
+g.add_edge(0, 6)
+g.add_edge(1, 2)
+g.add_edge(2, 6)
+g.add_edge(3, 4)
+g.add_edge(4, 9)
+g.add_edge(4, 11)
+g.add_edge(5, 4)
+g.add_edge(5, 3)
+g.add_edge(6, 7)
+g.add_edge(7, 8)
+g.add_edge(7, 10)
+g.add_edge(8, 10)
+g.add_edge(9, 11)
+g.add_edge(11, 12)
 
-g.dfs(0)
-g.pprint_dfs_results()
+dfs = DFS(g)
+dfs.run(0)
+dfs.pprint_dfs_results()
