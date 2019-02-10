@@ -1,9 +1,11 @@
 import numpy as np
+cimport numpy as np
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 cdef class Graph:
     cdef int[:,:] adj_matrix
     cdef bint directed
+    cdef int length
 
     def __init__(self, int n, bint directed=0):
         """Graph structure for dense graphs.
@@ -33,12 +35,16 @@ cdef class Graph:
         """
         self.adj_matrix = np.zeros((n, n), dtype='i')
         self.directed = directed
+        self.length = n
 
     @property
     def matrix(self):
         """Get a numpy ndarray of the graph adjacency matrix."""
         return np.asarray(self.adj_matrix)
 
+    cdef int vlength(self, int v):
+        """Get the length of the vector array"""
+        return self.length
 
     cpdef void add_edge(self, int v, int w):
         """Add an edge between the vectors v and w.
@@ -57,6 +63,7 @@ cdef class Graph:
 
 cdef struct link:
     int val
+    int counter
     link *next
 
 
@@ -66,6 +73,9 @@ cdef link * create_link(int v, link *prev_link):
     x.next = NULL
     if prev_link is not NULL:
         prev_link.next = x
+        x.counter = prev_link.counter + 1
+    else:
+        x.counter = 0
     return x
 
 
@@ -124,6 +134,10 @@ cdef class SparseGraph:
     def list(self):
         """Get a python list representation of the graph adjacency list."""
         return self._to_py_list()
+
+    cdef int vlength(self, int v):
+        """Get the length of the vector array"""
+        return self.last_link[v].counter + 1
 
     cdef _to_py_list(self):
         cdef link * al
