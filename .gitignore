@@ -106,3 +106,7 @@ venv.bak/
 # pycharm
 .idea
 venv
+
+# Cython
+*.c
+*.html
