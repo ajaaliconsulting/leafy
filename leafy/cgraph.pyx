@@ -1,11 +1,8 @@
 import numpy as np
-cimport numpy as np
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
+
 cdef class Graph:
-    cdef int[:,:] adj_matrix
-    cdef bint directed
-    cdef int length
 
     def __init__(self, int n, bint directed=0):
         """Graph structure for dense graphs.
@@ -61,10 +58,7 @@ cdef class Graph:
             self.adj_matrix[w][v] = 1
 
 
-cdef struct link:
-    int val
-    int counter
-    link *next
+
 
 
 cdef link * create_link(int v, link *prev_link):
@@ -80,10 +74,6 @@ cdef link * create_link(int v, link *prev_link):
 
 
 cdef class SparseGraph:
-    cdef link **adj_list
-    cdef link **last_link
-    cdef int length
-    cdef bint directed
 
     def __init__(self, int n, bint directed=0):
         """Graph structure for sparse graphs.

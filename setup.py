@@ -8,7 +8,12 @@ ext_1 = Extension(
     include_dirs=[numpy.get_include()],
 )
 
-EXTENSIONS = cythonize([ext_1], annotate=True)
+ext_2 = Extension(
+    'dfs', ['dfs.pyx'],
+    include_dirs=[numpy.get_include()],
+)
+
+EXTENSIONS = cythonize([ext_1, ext_2], annotate=True)
 
 if __name__ == "__main__":
     setup(install_requires=[],
