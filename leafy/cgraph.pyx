@@ -1,10 +1,12 @@
 import numpy as np
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
+cdef class GraphBase:
+    cdef int vlength(self, int v):
+        return 0
 
-cdef class Graph:
-
-    def __init__(self, int n, bint directed=0):
+cdef class Graph(GraphBase):
+    def __cinit__(self, int n, bint directed=0):
         """Graph structure for dense graphs.
 
         Internally uses a matrix to store the edges.  This is more efficient for dense graphs.
@@ -57,12 +59,8 @@ cdef class Graph:
         if not self.directed:
             self.adj_matrix[w][v] = 1
 
-
-
-
-
-cdef link * create_link(int v, link *prev_link):
-    cdef link *x = <link *>PyMem_Malloc(sizeof(link))
+cdef link *create_link(int v, link *prev_link):
+    cdef link *x = <link *> PyMem_Malloc(sizeof(link))
     x.val = v
     x.next = NULL
     if prev_link is not NULL:
@@ -72,10 +70,8 @@ cdef link * create_link(int v, link *prev_link):
         x.counter = 0
     return x
 
-
-cdef class SparseGraph:
-
-    def __init__(self, int n, bint directed=0):
+cdef class SparseGraph(GraphBase):
+    def __cinit__(self, int n, bint directed=0):
         """Graph structure for sparse graphs.
 
         Internally uses an array of linked lists to store the edges.
@@ -105,14 +101,14 @@ cdef class SparseGraph:
         """
         self.length = n
         self.directed = directed
-        self.adj_list = <link **>PyMem_Malloc(n * sizeof(link*))
-        self.last_link = <link **>PyMem_Malloc(n * sizeof(link*))
+        self.adj_list = <link **> PyMem_Malloc(n * sizeof(link*))
+        self.last_link = <link **> PyMem_Malloc(n * sizeof(link*))
         for i in range(self.length):
             self.adj_list[i] = self.last_link[i] = NULL
 
     def __dealloc__(self):
-        cdef link * al
-        cdef link * next_al
+        cdef link *al
+        cdef link *next_al
         for i in range(self.length):
             al = self.adj_list[i]
             while al is not NULL:
@@ -130,7 +126,7 @@ cdef class SparseGraph:
         return self.last_link[v].counter + 1
 
     cdef _to_py_list(self):
-        cdef link * al
+        cdef link *al
         ret_list = []
         for i in range(self.length):
             i_list = []
@@ -141,7 +137,7 @@ cdef class SparseGraph:
             ret_list.append(i_list)
         return ret_list
 
-    cdef _add_edge(self, v, w):
+    cdef _add_edge(self, int v, int w):
         if self.adj_list[v] is NULL:
             self.adj_list[v] = create_link(w, NULL)
             self.last_link[v] = self.adj_list[v]
