@@ -1,4 +1,5 @@
 import numpy as np
+cimport numpy as np
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 cdef class GraphBase:
@@ -32,7 +33,7 @@ cdef class Graph(GraphBase):
         [[0, 1],
          [0, 0]]
         """
-        self.adj_matrix = np.zeros((n, n), dtype='i')
+        self.adj_matrix = np.zeros((n, n), dtype=np.intc)
         self.directed = directed
         self.length = n
 
@@ -69,6 +70,7 @@ cdef link *create_link(int v, link *prev_link):
     else:
         x.counter = 0
     return x
+
 
 cdef class SparseGraph(GraphBase):
     def __cinit__(self, int n, bint directed=0):

@@ -4,9 +4,9 @@ cdef class GraphBase:
 
 
 cdef class Graph(GraphBase):
-    cdef int[:,:] adj_matrix
+    cdef int[:,::1] adj_matrix
     cdef bint directed
-    cdef int length
+    cdef readonly int length
     cdef int vlength(self, int v)
     cpdef void add_edge(self, int v, int w)
 
@@ -20,7 +20,7 @@ cdef struct link:
 cdef class SparseGraph(GraphBase):
     cdef link **adj_list
     cdef link **last_link
-    cdef int length
+    cdef readonly int length
     cdef bint directed
     cdef int vlength(self, int v)
     cdef _to_py_list(self)

@@ -10,7 +10,7 @@ g = Graph(2)
 g.add_edge(0, 1)
 print(g.matrix)
 
-dfs = DFS(g)
+dfs = DFS(g, 0)
 
 d = Graph(2, True)
 d.add_edge(0, 1)
@@ -26,5 +26,5 @@ sg.add_edge(4, 3)
 
 print(sg.list)
 
-dfs = DFS(sg)
+dfs = DFS(sg, 0)
 
