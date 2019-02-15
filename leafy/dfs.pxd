@@ -1,5 +1,5 @@
 from cgraph cimport GraphBase
-from data_structure cimport link
+from data_structure cimport AdjacencyList
 
 cdef class DFS:
     cdef GraphBase _graph
@@ -15,9 +15,10 @@ cdef class DFS:
     cdef int _pre_counter
     cdef int _post_counter
     cdef int _edge_count
-    cdef link ** _tree_links
-    cdef link ** _back_links
-    cdef link ** _down_links
-    cdef link ** _parent_links
-    cdef void _run(self, int node, int st, int colour)
+    cdef AdjacencyList _tree_links
+    cdef AdjacencyList _back_links
+    cdef AdjacencyList _down_links
+    cdef AdjacencyList _parent_links
+    cdef void _run_sparse(self, int node, int st, int colour)
+    cdef void _run_dense(self, int node, int st, int colour)
     cpdef void run(self)

@@ -25,5 +25,6 @@ sg.add_edge(4, 3)
 
 print(sg.list)
 
-dfs = DFS(sg, 0)
+sgdfs = DFS(sg, 0)
+sgdfs.run()
 

@@ -1,12 +1,12 @@
 import numpy as np
 cimport numpy as np
-from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
-
+from data_structure cimport AdjacencyList
 
 cdef class GraphBase:
-    cdef int vlength(self, int v):
-        return 0
+    cpdef void add_edge(self, int v, int w):
+        return
+
 
 cdef class Graph(GraphBase):
     def __cinit__(self, int n, bint directed=0):
@@ -43,10 +43,6 @@ cdef class Graph(GraphBase):
     def matrix(self):
         """Get a numpy ndarray of the graph adjacency matrix."""
         return np.asarray(self.adj_matrix)
-
-    cdef int vlength(self, int v):
-        """Get the length of the vector array"""
-        return self.length
 
     cpdef void add_edge(self, int v, int w):
         """Add an edge between the vectors v and w.
@@ -94,48 +90,12 @@ cdef class SparseGraph(GraphBase):
         """
         self.length = n
         self.directed = directed
-        self.adj_list = <link **> PyMem_Malloc(n * sizeof(link*))
-        self.last_link = <link **> PyMem_Malloc(n * sizeof(link*))
-        for i in range(self.length):
-            self.adj_list[i] = self.last_link[i] = NULL
-
-    def __dealloc__(self):
-        cdef link *al
-        cdef link *next_al
-        for i in range(self.length):
-            al = self.adj_list[i]
-            while al is not NULL:
-                next_al = al.next
-                PyMem_Free(al)
-                al = next_al
+        self.adj_list = AdjacencyList(n)
 
     @property
     def list(self):
         """Get a python list representation of the graph adjacency list."""
-        return self._to_py_list()
-
-    cdef int vlength(self, int v):
-        """Get the length of the vector array"""
-        return self.last_link[v].counter + 1
-
-    cdef list _to_py_list(self):
-        cdef link *al
-        ret_list = []
-        for i in range(self.length):
-            i_list = []
-            al = self.adj_list[i]
-            while al is not NULL:
-                i_list.append(al.val)
-                al = al.next
-            ret_list.append(i_list)
-        return ret_list
-
-    cdef void _add_edge(self, int v, int w):
-        if self.adj_list[v] is NULL:
-            self.adj_list[v] = create_link(w, NULL)
-            self.last_link[v] = self.adj_list[v]
-        else:
-            self.last_link[v] = create_link(w, self.last_link[v])
+        return self.adj_list.as_py_list()
 
     cpdef void add_edge(self, int v, int w):
         """Add an edge between the vectors v and w.
@@ -147,6 +107,6 @@ cdef class SparseGraph(GraphBase):
         w : int
             index of vector w
         """
-        self._add_edge(v, w)
+        self.adj_list.append(v, w)
         if not self.directed:
-            self._add_edge(w, v)
+            self.adj_list.append(w, v)
