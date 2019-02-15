@@ -2,9 +2,7 @@
 Purpose:
 *.
 """
-from leafy.data_structure import *
 from leafy.cgraph import Graph, SparseGraph
-
 from leafy.dfs import DFS
 
 g = Graph(2)

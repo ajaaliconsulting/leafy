@@ -6,17 +6,20 @@ from Cython.Distutils import build_ext
 from setuptools import setup, Extension
 
 cython_files = [
-    'data_structure.pyx',
-    'cgraph.pyx',
-    'dfs.pyx'
+    'leafy/data_structure.pyx',
+    'leafy/cgraph.pyx',
+    'leafy/dfs.pyx'
 ]
+
 
 EXTENSIONS = cythonize(
     [
-        Extension(
-            Path(m).stem, [m],
-            include_dirs=[numpy.get_include()],
-        ) for m in cython_files
+        Extension('leafy.data_structure', ['leafy/data_structure.pyx'],
+                  include_dirs=[numpy.get_include()]),
+        Extension('leafy.cgraph', ['leafy/cgraph.pyx'],
+                  include_dirs=[numpy.get_include()]),
+        Extension('leafy.dfs', ['leafy/dfs.pyx'],
+                  include_dirs=[numpy.get_include()]),
     ],
     annotate=True)
 
