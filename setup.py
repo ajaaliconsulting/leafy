@@ -1,19 +1,24 @@
+from pathlib import Path
+
 import numpy
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 from setuptools import setup, Extension
 
-ext_1 = Extension(
-    'cgraph', ['cgraph.pyx'],
-    include_dirs=[numpy.get_include()],
-)
+cython_files = [
+    'data_structure.pyx',
+    'cgraph.pyx',
+    'dfs.pyx'
+]
 
-ext_2 = Extension(
-    'dfs', ['dfs.pyx'],
-    include_dirs=[numpy.get_include()],
-)
-
-EXTENSIONS = cythonize([ext_1, ext_2], annotate=True)
+EXTENSIONS = cythonize(
+    [
+        Extension(
+            Path(m).stem, [m],
+            include_dirs=[numpy.get_include()],
+        ) for m in cython_files
+    ],
+    annotate=True)
 
 if __name__ == "__main__":
     setup(install_requires=[],

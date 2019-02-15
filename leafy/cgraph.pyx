@@ -2,6 +2,8 @@ import numpy as np
 cimport numpy as np
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
+
+
 cdef class GraphBase:
     cdef int vlength(self, int v):
         return 0
@@ -60,17 +62,6 @@ cdef class Graph(GraphBase):
         if not self.directed:
             self.adj_matrix[w][v] = 1
 
-cdef link *create_link(int v, link *prev_link):
-    cdef link *x = <link *> PyMem_Malloc(sizeof(link))
-    x.val = v
-    x.next = NULL
-    if prev_link is not NULL:
-        prev_link.next = x
-        x.counter = prev_link.counter + 1
-    else:
-        x.counter = 0
-    return x
-
 
 cdef class SparseGraph(GraphBase):
     def __cinit__(self, int n, bint directed=0):
@@ -127,7 +118,7 @@ cdef class SparseGraph(GraphBase):
         """Get the length of the vector array"""
         return self.last_link[v].counter + 1
 
-    cdef _to_py_list(self):
+    cdef list _to_py_list(self):
         cdef link *al
         ret_list = []
         for i in range(self.length):
@@ -139,7 +130,7 @@ cdef class SparseGraph(GraphBase):
             ret_list.append(i_list)
         return ret_list
 
-    cdef _add_edge(self, int v, int w):
+    cdef void _add_edge(self, int v, int w):
         if self.adj_list[v] is NULL:
             self.adj_list[v] = create_link(w, NULL)
             self.last_link[v] = self.adj_list[v]

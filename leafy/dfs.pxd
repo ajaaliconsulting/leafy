@@ -1,4 +1,5 @@
-from cgraph cimport GraphBase, link
+from cgraph cimport GraphBase
+from data_structure cimport link
 
 cdef class DFS:
     cdef GraphBase _graph

@@ -4,7 +4,6 @@ Purpose:
 """
 import numpy as np
 
-cimport cgraph
 from cgraph cimport GraphBase
 
 cdef class DFS:
