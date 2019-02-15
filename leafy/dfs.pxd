@@ -18,3 +18,5 @@ cdef class DFS:
     cdef link ** _back_links
     cdef link ** _down_links
     cdef link ** _parent_links
+    cdef void _run(self, int node, int st, int colour)
+    cpdef void run(self)
