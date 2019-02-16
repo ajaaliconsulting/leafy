@@ -19,14 +19,14 @@ from data_structure cimport AdjacencyList
 cdef class DFS:
     """Depth First Search of a graph starting from a defined node.
 
-    Run a depth first search on a graph record its structural attributes. By running DFS
+    Run a depth first search on a graph recording its structural attributes. By running DFS
     we can find out:
     - Tree links: These are edges from nodes to other unvisited nodes.
     - Back links: These are edges from nodes to visited ancentors.
     - Down links: These are edges from nodes to visited decendents.
     - Parent Links: These are edges from nodes back to their parents.
     - Simple Path: A simple path from the start node to a sink node.
-    - Two Colourability: Can the graph be two colourable? As in give each node a colour
+    - Two Colourability: Can the graph be two colourable? Can we give each node a colour
         that is different to it's neighbours.
     - Bridges: All the edges that if removed would split the graph.
     - Articulation Points: All the nodes that if removed would split the graph.
@@ -137,6 +137,11 @@ cdef class DFS:
     @property
     def unvisited(self):
         """List of ints: All the nodes unvisited by the DFS"""
+        assert self._dfs_run != 0, "Run the DFS before calling results."
+
+    @property
+    def visited_edge_count(self):
+        """int: Number of visited edges during the DFS"""
         assert self._dfs_run != 0, "Run the DFS before calling results."
 
     cpdef list simple_path(self, int sink_node):
