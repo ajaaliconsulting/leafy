@@ -38,6 +38,7 @@ cdef class Graph(GraphBase):
         self.dense = 1
         self.length = n
         self.directed = directed
+        self.edge_count = 0
         self.adj_matrix = np.zeros((n, n), dtype=np.intc)
 
     @property
@@ -55,8 +56,10 @@ cdef class Graph(GraphBase):
         w : int
             index of vector w
         """
+        self.edge_count += 1
         self.adj_matrix[v][w] = 1
         if not self.directed:
+            self.edge_count += 1
             self.adj_matrix[w][v] = 1
 
 
@@ -92,6 +95,7 @@ cdef class SparseGraph(GraphBase):
         self.dense = 0
         self.length = n
         self.directed = directed
+        self.edge_count = 0
         self.adj_list = AdjacencyList(n)
 
     @property
@@ -109,6 +113,8 @@ cdef class SparseGraph(GraphBase):
         w : int
             index of vector w
         """
+        self.edge_count += 1
         self.adj_list.append(v, w)
         if not self.directed:
+            self.edge_count += 1
             self.adj_list.append(w, v)

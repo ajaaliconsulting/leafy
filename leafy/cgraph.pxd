@@ -2,6 +2,7 @@ from data_structure cimport AdjacencyList
 
 cdef class GraphBase:
     cdef readonly int length
+    cdef readonly int edge_count
     cdef bint directed
     cdef bint dense
     cpdef void add_edge(self, int v, int w)
