@@ -4,6 +4,7 @@ from data_structure cimport AdjacencyList
 cdef class DFS:
     cdef GraphBase _graph
     cdef int _start_node
+    cdef int _sink_node
     cdef int [::1] _pre
     cdef int [::1] _st
     cdef int [::1] _post

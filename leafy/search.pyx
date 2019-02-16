@@ -1,7 +1,14 @@
+"""Graph search algorithms.
+
+This module contains graph search algorithms, mainly:
+- DFS: Depth First Search
+- BFS: Breadth First Search
+
+Each search algorithm is specific to finding certain attributes about the graph
+structure like: Cycles, Bridges, Colourability, etc. These attributes are documented
+under each algorithm.
 """
-Purpose:
-*.
-"""
+
 cimport numpy
 import numpy as np
 cimport cython
@@ -12,24 +19,56 @@ from data_structure cimport AdjacencyList
 cdef class DFS:
     """Depth First Search of a graph starting from a defined node.
 
+    Run a depth first search on a graph record its structural attributes. By running DFS
+    we can find out:
+    - Tree links: These are edges from nodes to other unvisited nodes.
+    - Back links: These are edges from nodes to visited ancentors.
+    - Down links: These are edges from nodes to visited decendents.
+    - Parent Links: These are edges from nodes back to their parents.
+    - Simple Path: A simple path from the start node to a sink node.
+    - Two Colourability: Can the graph be two colourable? As in give each node a colour
+        that is different to it's neighbours.
+    - Bridges: All the edges that if removed would split the graph.
+    - Articulation Points: All the nodes that if removed would split the graph.
+    - Visited nodes: All the nodes reachable from the start node.
+    - Unvisited nodes: All the nodes not reachable from the start node.
+
     Parameters
     ----------
     graph : GraphBase
         An instance of either Graph or SparseGraph.
-    node : int
+    start_node : int
         The node index to start from.
+    sink_node : int, optional
+        The node to stop searching at.
+
+    Examples
+    --------
+    Before you're able to interogate the graph structure you have to run the DFS.
+
+    >>> g = Graph(200)
+    >>> g.add(1, 0)
+    >>> dfs = DFS(g, 0)
+    >>> dfs.run()
+
+    Once the algorithm has run you can then as the dfs for it's attributes:
+    >>> dfs.two_colourability
+    False
+
     """
 
-    def __cinit__(self, GraphBase graph not None, int start_node):
-        assert -1 < start_node < graph.length
+    def __cinit__(self, GraphBase graph not None, int start_node, int sink_node=-1):
+        assert -1 < start_node < graph.length, "DFS start node must be on the graph."
+        assert -1 <= sink_node < graph.length, "DFS sink node mush be on the graph."
 
         self._graph = graph
         self._start_node = start_node
+        self._sink_node = sink_node
 
         self._pre = np.full(self._graph.length, -1, dtype=np.intc)  # Pre search counter
         self._st = np.full(self._graph.length, -1, dtype=np.intc)  # Structural parent
         self._post = np.full(self._graph.length, -1, dtype=np.intc) # Post search counter
-        self._lows = np.full(self._graph.length, -1, dtype=np.intc) #
+        self._lows = np.full(self._graph.length, -1, dtype=np.intc) # Used to find bridges
         self._cycle = np.full(self._graph.length, -1, dtype=np.intc)
         self._colour = np.full(self._graph.length, -1, dtype=np.intc) # Colour index for
         self._art = np.full(self._graph.length, -1, dtype=np.intc)
@@ -46,32 +85,62 @@ cdef class DFS:
         self._dfs_run = 0
 
     @property
-    def bridges(self):
-        assert self._dfs_run != 0, "Run the DFS before calling results."
-        return self._bridges.as_py_dict()
-
-    @property
     def tree_links(self):
+        """dict of int to list of int: All the nodes visited for the first time from each node."""
         assert self._dfs_run != 0, "Run the DFS before calling results."
         return self._tree_links.as_py_dict()
 
     @property
     def back_links(self):
+        """dict of int to list of int: All the ancestor nodes visited for the from each node."""
         assert self._dfs_run != 0, "Run the DFS before calling results."
         return self._back_links.as_py_dict()
 
     @property
     def down_links(self):
+        """dict of int to list of int: All the decendent nodes visited for the from each node."""
         assert self._dfs_run != 0, "Run the DFS before calling results."
         return self._down_links.as_py_dict()
 
     @property
     def parent_links(self):
+        """dict of int to list of int: All the nodes that link back to their parents."""
         assert self._dfs_run != 0, "Run the DFS before calling results."
         return self._parent_links.as_py_dict()
 
+    @property
+    def bridges(self):
+        """tuple of (int, int): All the links that if removed would split the graph."""
+        assert self._dfs_run != 0, "Run the DFS before calling results."
+        return self._bridges.as_py_dict()
+
+    @property
+    def articulation_points(self):
+        """list of int: All the nodes that if removed would split the graph."""
+        assert self._dfs_run != 0, "Run the DFS before calling results."
+
+    @property
+    def colours(self):
+        """dict of int to list of int: List of nodes by colour index."""
+        assert self._dfs_run != 0, "Run the DFS before calling results."
+
+    @property
+    def two_colourable(self):
+        """bool: True if the graph is two colourable."""
+        assert self._dfs_run != 0, "Run the DFS before calling results."
+
+    @property
+    def visited(self):
+        """List of ints: All the nodes visited by the DFS run."""
+        assert self._dfs_run != 0, "Run the DFS before calling results."
+
+    @property
+    def unvisited(self):
+        """List of ints: All the nodes unvisited by the DFS"""
+        assert self._dfs_run != 0, "Run the DFS before calling results."
+
     cpdef list simple_path(self, int sink_node):
-        """Display the simple part to get from the start node to a sink node
+        """Display the simple path to get from the start node to a sink node
         
         Parameters
         ----------
@@ -106,6 +175,9 @@ cdef class DFS:
     @cython.initializedcheck(False)
     @cython.wraparound(False)
     cdef void _run_dense(self, int v, int st, int colour):
+        if v == self._sink_node:
+            return
+
         cdef int w
 
         self._st[v] = st
