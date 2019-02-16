@@ -11,3 +11,4 @@ cdef class AdjacencyList:
     cdef void append(self, int index, int value)
     cdef int length(self, int index)
     cdef list as_py_list(self)
+    cdef dict as_py_dict(self)
