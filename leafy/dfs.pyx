@@ -71,15 +71,15 @@ cdef class DFS:
         Parameters
         ----------
         sink_node : int
-            The destination node of the path
+            The destination node of the path.
             
         Returns
         -------
         list
-            all the nodes on the path from (inc.) the start node to (inc) the sink node
+            all the nodes on the path from (inc.) the start node to (inc.) the sink node.
         """
         assert self._dfs_run != 0, "Run the DFS before calling DFS.simple_path()"
-        cdef path = []
+        cdef list path = []
         st = self._st[sink_node]
         path.append(sink_node)
         while st != -1:
@@ -99,6 +99,7 @@ cdef class DFS:
 
     @cython.boundscheck(False)
     @cython.initializedcheck(False)
+    @cython.wraparound(False)
     cdef void _run_dense(self, int v, int st, int colour):
         cdef int w
 
