@@ -1,6 +1,6 @@
 
 from leafy.cgraph import Graph
-from leafy.dfs import DFS
+from leafy.search import DFS
 
 g = Graph(13)
 g.add_edge(0, 5)

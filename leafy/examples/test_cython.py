@@ -3,7 +3,7 @@ Purpose:
 *.
 """
 from leafy.cgraph import Graph, SparseGraph
-from leafy.dfs import DFS
+from leafy.search import DFS
 
 g = Graph(2)
 g.add_edge(0, 1)

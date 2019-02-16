@@ -1,15 +1,7 @@
-from pathlib import Path
-
 import numpy
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 from setuptools import setup, Extension
-
-cython_files = [
-    'leafy/data_structure.pyx',
-    'leafy/cgraph.pyx',
-    'leafy/dfs.pyx'
-]
 
 
 EXTENSIONS = cythonize(
@@ -18,7 +10,7 @@ EXTENSIONS = cythonize(
                   include_dirs=[numpy.get_include()]),
         Extension('leafy.cgraph', ['leafy/cgraph.pyx'],
                   include_dirs=[numpy.get_include()]),
-        Extension('leafy.dfs', ['leafy/dfs.pyx'],
+        Extension('leafy.search', ['leafy/search.pyx'],
                   include_dirs=[numpy.get_include()]),
     ],
     annotate=True)
