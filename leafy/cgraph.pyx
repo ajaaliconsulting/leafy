@@ -35,9 +35,10 @@ cdef class Graph(GraphBase):
         [[0, 1],
          [0, 0]]
         """
-        self.adj_matrix = np.zeros((n, n), dtype=np.intc)
-        self.directed = directed
+        self.dense = 1
         self.length = n
+        self.directed = directed
+        self.adj_matrix = np.zeros((n, n), dtype=np.intc)
 
     @property
     def matrix(self):
@@ -88,6 +89,7 @@ cdef class SparseGraph(GraphBase):
         [[1],
         []]
         """
+        self.dense = 0
         self.length = n
         self.directed = directed
         self.adj_list = AdjacencyList(n)
