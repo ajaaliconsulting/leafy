@@ -11,14 +11,16 @@ cdef class DFS:
     cdef int [::1] _cycle
     cdef int [::1] _colour
     cdef int [::1] _art
-    cdef int [::1] _bridges
     cdef int _pre_counter
     cdef int _post_counter
     cdef int _edge_count
+    cdef bint _dfs_run
+    cdef AdjacencyList _bridges
     cdef AdjacencyList _tree_links
     cdef AdjacencyList _back_links
     cdef AdjacencyList _down_links
     cdef AdjacencyList _parent_links
+    cpdef list simple_path(self, int sink_node)
+    cpdef void run(self)
     cdef void _run_sparse(self, int node, int st, int colour)
     cdef void _run_dense(self, int node, int st, int colour)
-    cpdef void run(self)
