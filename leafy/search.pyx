@@ -47,22 +47,27 @@ cdef class DFS:
 
     @property
     def bridges(self):
+        assert self._dfs_run != 0, "Run the DFS before calling results."
         return self._bridges.as_py_dict()
 
     @property
     def tree_links(self):
+        assert self._dfs_run != 0, "Run the DFS before calling results."
         return self._tree_links.as_py_dict()
 
     @property
     def back_links(self):
+        assert self._dfs_run != 0, "Run the DFS before calling results."
         return self._back_links.as_py_dict()
 
     @property
     def down_links(self):
+        assert self._dfs_run != 0, "Run the DFS before calling results."
         return self._down_links.as_py_dict()
 
     @property
     def parent_links(self):
+        assert self._dfs_run != 0, "Run the DFS before calling results."
         return self._parent_links.as_py_dict()
 
     cpdef list simple_path(self, int sink_node):
@@ -78,7 +83,7 @@ cdef class DFS:
         list
             all the nodes on the path from (inc.) the start node to (inc.) the sink node.
         """
-        assert self._dfs_run != 0, "Run the DFS before calling DFS.simple_path()"
+        assert self._dfs_run != 0, "Run the DFS before calling results."
         cdef list path = []
         st = self._st[sink_node]
         path.append(sink_node)
