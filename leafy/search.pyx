@@ -144,6 +144,9 @@ cdef class DFS:
         """int: Number of visited edges during the DFS"""
         assert self._dfs_run != 0, "Run the DFS before calling results."
 
+    @cython.boundscheck(False)
+    @cython.initializedcheck(False)
+    @cython.wraparound(False)
     cpdef list simple_path(self, int sink_node):
         """Display the simple path to get from the start node to a sink node
         
@@ -158,8 +161,10 @@ cdef class DFS:
             all the nodes on the path from (inc.) the start node to (inc.) the sink node.
         """
         assert self._dfs_run != 0, "Run the DFS before calling results."
+        cdef int st = self._st[sink_node]
+        assert sink_node != self._start_node and st != -1, "Unconnected nodes"
+
         cdef list path = []
-        st = self._st[sink_node]
         path.append(sink_node)
         while st != -1:
             path.insert(0, st)
