@@ -24,5 +24,4 @@ cdef class DFS:
     cdef AdjacencyList _parent_links
     cpdef list simple_path(self, int sink_node)
     cpdef void run(self)
-    cdef void _run_sparse(self, int node, int st, int colour)
-    cdef void _run_dense(self, int node, int st, int colour)
+    cdef void _run(self, int node, int st, int colour)

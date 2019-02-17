@@ -1,5 +1,5 @@
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
-
+cimport cython
 
 cdef link *create_link(int v, link *prev_link):
     cdef link *x = <link *> PyMem_Malloc(sizeof(link))
@@ -79,6 +79,48 @@ cdef class AdjacencyList:
     cdef dict as_py_dict(self):
         cdef dict py_dict = dict(self.as_py_pairs())
         return py_dict
+
+    cdef LinkedListIter listiter(self, int index):
+        return LinkedListIter.create(self._start[index])
+
+
+cdef class LinkedListIter:
+    @staticmethod
+    cdef LinkedListIter create(link *root_link):
+        cdef LinkedListIter lli = LinkedListIter()
+        lli.ll = root_link
+        return lli
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        cdef int val
+        if self.ll is not NULL:
+            val = self.ll.val
+            self.ll = self.ll.next
+            return val
+        raise StopIteration
+
+
+cdef class MemoryViewArrayIter:
+    def __cinit__(self, int [:] mv, int length):
+        self._length = length
+        self._mv_array = mv
+        self._counter = -1
+
+    def __iter__(self):
+        return self
+
+    @cython.boundscheck(False)
+    @cython.initializedcheck(False)
+    @cython.wraparound(False)
+    def __next__(self):
+        while self._counter < self._length -1:
+            self._counter += 1
+            if self._mv_array[self._counter] != 0:
+                return self._counter
+        raise StopIteration
 
 
 

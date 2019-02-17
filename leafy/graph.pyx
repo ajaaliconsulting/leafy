@@ -1,7 +1,8 @@
 import numpy as np
 cimport numpy as np
+cimport cython
 
-from data_structure cimport AdjacencyList
+from data_structure cimport AdjacencyList, MemoryViewArrayIter, LinkedListIter
 
 cdef class GraphBase:
     cpdef void add_edge(self, int v, int w):
@@ -62,6 +63,13 @@ cdef class Graph(GraphBase):
             self.edge_count += 1
             self.adj_matrix[w][v] = 1
 
+    @cython.boundscheck(False)
+    @cython.initializedcheck(False)
+    @cython.wraparound(False)
+    cpdef MemoryViewArrayIter nodeiter(self, int node):
+        """ArrayIter: Iterator object over the edges of a node."""
+        return MemoryViewArrayIter(self.adj_matrix[node][:], self.length)
+
 
 cdef class SparseGraph(GraphBase):
     def __cinit__(self, int n, bint directed=0):
@@ -118,3 +126,6 @@ cdef class SparseGraph(GraphBase):
         if not self.directed:
             self.edge_count += 1
             self.adj_list.append(w, v)
+
+    cpdef LinkedListIter nodeiter(self, int node):
+        return self.adj_list.listiter(node)

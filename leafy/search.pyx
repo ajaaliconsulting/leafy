@@ -191,18 +191,12 @@ cdef class DFS:
 
     cpdef void run(self):
         self._dfs_run = 1
-        if self._graph.dense == 1:
-            self._run_dense(self._start_node, -1, 0)
-        else:
-            self._run_sparse(self._start_node, -1, 0)
-
-    cdef void _run_sparse(self, int v, int st, int colour):
-        pass
+        self._run(self._start_node, -1, 0)
 
     @cython.boundscheck(False)
     @cython.initializedcheck(False)
     @cython.wraparound(False)
-    cdef void _run_dense(self, int v, int st, int colour):
+    cdef void _run(self, int v, int st, int colour):
         if v == self._sink_node:
             return
 
@@ -214,14 +208,11 @@ cdef class DFS:
         self._lows[v] = self._pre_counter
         self._pre_counter += 1
 
-        for w in range(self._graph.length):
-            if self._graph.adj_matrix[v][w] == 0:
-                continue
-
+        for w in self._graph.nodeiter(v):
             self._edge_count += 1
             if self._pre[w] == -1:
                 self._tree_links.append(v, w)
-                self._run_dense(w, v, abs(colour - 1))
+                self._run(w, v, abs(colour - 1))
                 self._lows[v] = min(self._lows[v], self._lows[w])
                 if self._lows[w] >= self._pre[v] and st != -1:
                     self._art[v] = 1

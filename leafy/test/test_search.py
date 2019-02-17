@@ -33,22 +33,23 @@ def small_graph(graph_type):
     graph.add_edge(15, 10)
     graph.add_edge(16, 17)
     graph.add_edge(16, 18)
-    graph.add_edge(17, 20)
     graph.add_edge(17, 19)
+    graph.add_edge(17, 20)
     graph.add_edge(19, 20)
     graph.add_edge(20, 21)
     graph.add_edge(17, 21)
     return graph
 
 
-@pytest.fixture(params=['dense'])  # , 'sparse'])
+@pytest.fixture(params=['dense', 'sparse'])
 def graph_dfs(request):
     graph = small_graph(request.param)
     dfs = DFS(graph, 0)
     dfs.run()
     return dfs
 
-@pytest.fixture(params=['dense'])  # , 'sparse'])
+
+@pytest.fixture(params=['dense', 'sparse'])
 def small_graph_dfs(request):
     graph = small_graph(request.param)
     dfs = DFS(graph, 16)
@@ -110,7 +111,9 @@ class TestDFS:
         assert set(small_graph_dfs.tree_links) == {(16, 17), (17, 19), (19, 20), (20, 21), (16, 18)}
         assert set(small_graph_dfs.back_links) == {(20, 17), (21, 17)}
         assert set(small_graph_dfs.down_links) == {(17, 20), (17, 21)}
-        assert set(small_graph_dfs.parent_links) == {(21, 20), (19, 17), (18, 16), (20, 19), (17, 16)}
+        assert set(small_graph_dfs.parent_links) == {
+            (21, 20), (19, 17), (18, 16), (20, 19), (17, 16)
+        }
 
 
 
