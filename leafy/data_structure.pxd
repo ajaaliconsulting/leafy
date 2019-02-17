@@ -23,6 +23,6 @@ cdef class AdjacencyList:
 
 
 cdef class MemoryViewArrayIter:
-    cdef int [:] _mv_array
+    cdef int [::1] _mv_array
     cdef int _length
     cdef int _counter

@@ -104,7 +104,7 @@ cdef class LinkedListIter:
 
 
 cdef class MemoryViewArrayIter:
-    def __cinit__(self, int [:] mv, int length):
+    def __cinit__(self, int [::1] mv, int length):
         self._length = length
         self._mv_array = mv
         self._counter = -1
