@@ -26,8 +26,8 @@ cdef class DFS:
     - Down links: These are edges from nodes to visited decendents.
     - Parent Links: These are edges from nodes back to their parents.
     - Simple Path: A simple path from the start node to a sink node.
-    - Two Colourability: Can the graph be two colourable? Can we give each node a colour
-        that is different to it's neighbours.
+    - Bipirtite: Can the graph be two colourable? Can we give each node a colour
+        that is different to it's neighbours. Does it have odd cycles?
     - Bridges: All the edges that if removed would split the graph.
     - Articulation Points: All the nodes that if removed would split the graph.
     - Visited nodes: All the nodes reachable from the start node.
@@ -83,66 +83,84 @@ cdef class DFS:
         self._post_counter = 0
         self._edge_count = 0
         self._dfs_run = 0
+        self._bipirtite = 1
+
+    @property
+    def diagnostics(self):
+        """dict of string to lists of ints: DFS internal indexing by metric."""
+        return {
+            'pre': list(self._pre),
+            'st': list(self._st),
+            'post': list(self._post),
+            'lows': list(self._lows),
+            'art' : list(self._art),
+            'colour': list(self._colour)
+        }
 
     @property
     def tree_links(self):
         """dict of int to list of int: All the nodes visited for the first time from each node."""
         assert self._dfs_run != 0, "Run the DFS before calling results."
-        return self._tree_links.as_py_dict()
+        return self._tree_links.as_py_pairs()
 
     @property
     def back_links(self):
         """dict of int to list of int: All the ancestor nodes visited for the from each node."""
         assert self._dfs_run != 0, "Run the DFS before calling results."
-        return self._back_links.as_py_dict()
+        return self._back_links.as_py_pairs()
 
     @property
     def down_links(self):
         """dict of int to list of int: All the decendent nodes visited for the from each node."""
         assert self._dfs_run != 0, "Run the DFS before calling results."
-        return self._down_links.as_py_dict()
+        return self._down_links.as_py_pairs()
 
     @property
     def parent_links(self):
         """dict of int to list of int: All the nodes that link back to their parents."""
         assert self._dfs_run != 0, "Run the DFS before calling results."
-        return self._parent_links.as_py_dict()
+        return self._parent_links.as_py_pairs()
 
     @property
     def bridges(self):
         """tuple of (int, int): All the links that if removed would split the graph."""
         assert self._dfs_run != 0, "Run the DFS before calling results."
-        return self._bridges.as_py_dict()
+        return self._bridges.as_py_pairs()
 
     @property
     def articulation_points(self):
         """list of int: All the nodes that if removed would split the graph."""
         assert self._dfs_run != 0, "Run the DFS before calling results."
+        return [i for i in range(self._graph.length) if self._art[i] != -1]
 
     @property
-    def colours(self):
-        """dict of int to list of int: List of nodes by colour index."""
-        assert self._dfs_run != 0, "Run the DFS before calling results."
-
-    @property
-    def two_colourable(self):
+    def bipirtite(self):
         """bool: True if the graph is two colourable."""
         assert self._dfs_run != 0, "Run the DFS before calling results."
+        return self._bipirtite == 1
 
     @property
     def visited(self):
         """List of ints: All the nodes visited by the DFS run."""
         assert self._dfs_run != 0, "Run the DFS before calling results."
+        return [i for i in range(self._graph.length) if self._pre[i] != -1]
 
     @property
     def unvisited(self):
         """List of ints: All the nodes unvisited by the DFS"""
         assert self._dfs_run != 0, "Run the DFS before calling results."
+        return [i for i in range(self._graph.length) if self._pre[i] == -1]
 
     @property
     def visited_edge_count(self):
-        """int: Number of visited edges during the DFS"""
+        """int: Number of visited edges during the DFS.
+
+        Notes
+        -----
+        Undirected edges are double counted.
+        """
         assert self._dfs_run != 0, "Run the DFS before calling results."
+        return self._edge_count
 
     @cython.boundscheck(False)
     @cython.initializedcheck(False)
@@ -205,24 +223,21 @@ cdef class DFS:
                 self._tree_links.append(v, w)
                 self._run_dense(w, v, abs(colour - 1))
                 self._lows[v] = min(self._lows[v], self._lows[w])
-
-                if self._lows[w] >= self._pre[v]:
+                if self._lows[w] >= self._pre[v] and st != -1:
                     self._art[v] = 1
-
             else:
-
                 if self._pre[v] < self._pre[w]:
                     self._down_links.append(v, w)
-                else:
+                elif w != st:
                     self._back_links.append(v, w)
-
-                if w != st:
+                    if self._colour[v] == self._colour[w]:
+                        self._bipirtite = 0
                     self._lows[v] = min(self._lows[v], self._pre[w])
                 else:
                     self._parent_links.append(v, w)
 
-        # if self._pre[v] == 0 and self._tree_links.keys_length():
-        #     self._art[v] = 1
+        if self._pre[v] == 0 and self._tree_links.length(v) > 1:
+            self._art[v] = 1
 
         if self._pre[v] == self._lows[v] and st != -1:
             self._bridges.append(st, v)

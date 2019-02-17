@@ -16,6 +16,7 @@ cdef class DFS:
     cdef int _post_counter
     cdef int _edge_count
     cdef bint _dfs_run
+    cdef bint _bipirtite
     cdef AdjacencyList _bridges
     cdef AdjacencyList _tree_links
     cdef AdjacencyList _back_links

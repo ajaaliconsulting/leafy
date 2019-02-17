@@ -48,7 +48,7 @@ cdef class AdjacencyList:
 
     cdef int length(self, int index):
         assert 0 <= index < self._array_length
-        return self._end[index].counter
+        return self._end[index].counter + 1
 
     cdef list as_py_list(self):
         cdef link *al
@@ -63,12 +63,21 @@ cdef class AdjacencyList:
             ret_list.append(i_list)
         return ret_list
 
-    cdef dict as_py_dict(self):
+    cdef list as_py_pairs(self):
+        cdef link *al
         cdef int i
-        cdef dict py_dict = dict()
-        cdef list py_list = self.as_py_list()
+        cdef list ret_list = []
+        cdef (int, int) pair
         for i in range(self._array_length):
-            py_dict.__setitem__(i, py_list[i])
+            al = self._start[i]
+            while al is not NULL:
+                pair = (i, al.val)
+                ret_list.append(pair)
+                al = al.next
+        return ret_list
+
+    cdef dict as_py_dict(self):
+        cdef dict py_dict = dict(self.as_py_pairs())
         return py_dict
 
 
