@@ -1,5 +1,5 @@
 
-from leafy.graph import Graph, DFS, BFS
+from leafy.py_graph import Graph, DFS, BFS
 
 g = Graph()
 g.add_edge(0, 5)

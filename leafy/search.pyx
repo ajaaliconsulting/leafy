@@ -13,7 +13,7 @@ cimport numpy
 import numpy as np
 cimport cython
 
-from cgraph cimport GraphBase
+from graph cimport GraphBase
 from data_structure cimport AdjacencyList
 
 cdef class DFS:

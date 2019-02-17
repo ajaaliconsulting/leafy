@@ -5,7 +5,7 @@ Purpose:
 import pytest
 from tabulate import tabulate
 
-from leafy.cgraph import Graph, SparseGraph
+from leafy.graph import Graph, SparseGraph
 from leafy.search import DFS
 
 

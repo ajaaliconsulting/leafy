@@ -8,7 +8,7 @@ EXTENSIONS = cythonize(
     [
         Extension('leafy.data_structure', ['leafy/data_structure.pyx'],
                   include_dirs=[numpy.get_include()]),
-        Extension('leafy.cgraph', ['leafy/cgraph.pyx'],
+        Extension('leafy.graph', ['leafy/graph.pyx'],
                   include_dirs=[numpy.get_include()]),
         Extension('leafy.search', ['leafy/search.pyx'],
                   include_dirs=[numpy.get_include()]),

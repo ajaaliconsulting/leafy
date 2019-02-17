@@ -1,5 +1,5 @@
 
-from leafy.cgraph import Graph
+from leafy.graph import Graph
 from leafy.search import DFS
 
 g = Graph(13)

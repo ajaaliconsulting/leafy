@@ -1,4 +1,4 @@
-from cgraph cimport GraphBase
+from graph cimport GraphBase
 from data_structure cimport AdjacencyList
 
 cdef class DFS:
