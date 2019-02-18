@@ -33,6 +33,9 @@ cdef class BFS:
     cdef int _sink_node
     cdef int [::1] _pre
     cdef int [::1] _st
+    cdef int _pre_counter
+    cdef bint _bfs_run
+    cdef int _edge_count
     cdef AdjacencyList _tree_links
     cdef AdjacencyList _back_links
     cdef AdjacencyList _down_links

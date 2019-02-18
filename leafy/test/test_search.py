@@ -6,7 +6,7 @@ import pytest
 from tabulate import tabulate
 
 from leafy.graph import Graph, SparseGraph
-from leafy.search import DFS
+from leafy.search import DFS, BFS
 
 
 def small_graph(graph_type):
@@ -50,11 +50,27 @@ def graph_dfs(request):
 
 
 @pytest.fixture(params=['dense', 'sparse'])
+def graph_bfs(request):
+    graph = small_graph(request.param)
+    bfs = BFS(graph, 0)
+    bfs.run()
+    return bfs
+
+
+@pytest.fixture(params=['dense', 'sparse'])
 def small_graph_dfs(request):
     graph = small_graph(request.param)
     dfs = DFS(graph, 16)
     dfs.run()
     return dfs
+
+
+@pytest.fixture(params=['dense', 'sparse'])
+def small_graph_bfs(request):
+    graph = small_graph(request.param)
+    bfs = BFS(graph, 16)
+    bfs.run()
+    return bfs
 
 
 def disanostics_table(diagnostics):
@@ -85,7 +101,7 @@ class TestDFS:
 
     def test_articulation_points(self, graph_dfs):
         assert set(graph_dfs.articulation_points) == {
-           1, 2, 3, 5, 11
+            1, 2, 3, 5, 11
         }, f"\n{disanostics_table(graph_dfs.diagnostics)}"
 
     def test_articulation_points_small_graph(self, small_graph_dfs):
@@ -116,5 +132,30 @@ class TestDFS:
         }
 
 
+class TestBFS:
+    def test_shortest_path(self, graph_bfs):
+        assert graph_bfs.shortest_path(12) == [
+            0, 2, 11, 12
+        ], f"\n{disanostics_table(graph_bfs.diagnostics)}"
+        assert graph_bfs.shortest_path(8) == [
+            0, 1, 3, 5, 8
+        ], f"\n{disanostics_table(graph_bfs.diagnostics)}"
 
+    def test_links(self, small_graph_bfs):
+        assert set(small_graph_bfs.tree_links) == {(16, 17), (16, 18), (17, 20), (17, 19), (17, 21)}
+        assert set(small_graph_bfs.back_links) == {(21, 20), (20, 19)}
+        assert set(small_graph_bfs.down_links) == {(20, 21), (19, 20)}
+        assert set(small_graph_bfs.parent_links) == {
+            (19, 17), (18, 16), (21, 17), (17, 16), (20, 17)
+        }
 
+    def test_visited_edge_count(self, graph_bfs):
+        assert graph_bfs.visited_edge_count == 38
+
+    def test_simple_path_unconnected_graph(self, graph_bfs):
+        with pytest.raises(AssertionError):
+            graph_bfs.shortest_path(20)
+
+    def test_visited(self, graph_bfs):
+        assert graph_bfs.visited == list(range(16))
+        assert graph_bfs.unvisited == list(range(16, 22))

@@ -255,16 +255,97 @@ cdef class BFS:
         self._parent_links = AdjacencyList(self._graph.length)
 
         self._pre_counter = 0
-        self._edge_counter = 0
+        self._edge_count = 0
+        self._bfs_run = 0
 
+    @property
+    def diagnostics(self):
+        """dict of string to lists of ints: BFS internal indexing by metric."""
+        return {
+            'pre': list(self._pre),
+            'st': list(self._st),
+        }
+
+    @property
+    def tree_links(self):
+        """dict of int to list of int: All the nodes visited for the first time from each node."""
+        assert self._bfs_run != 0, "Run the BFS before calling results."
+        return self._tree_links.as_py_pairs()
+
+    @property
+    def back_links(self):
+        """dict of int to list of int: All the ancestor nodes visited for the from each node."""
+        assert self._bfs_run != 0, "Run the BFS before calling results."
+        return self._back_links.as_py_pairs()
+
+    @property
+    def down_links(self):
+        """dict of int to list of int: All the decendent nodes visited for the from each node."""
+        assert self._bfs_run != 0, "Run the BFS before calling results."
+        return self._down_links.as_py_pairs()
+
+    @property
+    def parent_links(self):
+        """dict of int to list of int: All the nodes that link back to their parents."""
+        assert self._bfs_run != 0, "Run the BFS before calling results."
+        return self._parent_links.as_py_pairs()
+
+    @property
+    def visited(self):
+        """List of ints: All the nodes visited by the BFS run."""
+        assert self._bfs_run != 0, "Run the BFS before calling results."
+        return [i for i in range(self._graph.length) if self._pre[i] != -1]
+
+    @property
+    def unvisited(self):
+        """List of ints: All the nodes unvisited by the BFS"""
+        assert self._bfs_run != 0, "Run the BFS before calling results."
+        return [i for i in range(self._graph.length) if self._pre[i] == -1]
+
+    @property
+    def visited_edge_count(self):
+        """int: Number of visited edges during the DFS.
+
+        Notes
+        -----
+        Undirected edges are double counted.
+        """
+        assert self._bfs_run != 0, "Run the BFS before calling results."
+        return self._edge_count
+
+    @cython.boundscheck(False)
+    @cython.initializedcheck(False)
+    @cython.wraparound(False)
     cpdef list shortest_path(self, int sink_node):
-        return []
+        """Display the shortest path to get from the start node to a sink node
+        
+        Parameters
+        ----------
+        sink_node : int
+            The destination node of the path.
+            
+        Returns
+        -------
+        list
+            all the nodes on the path from (inc.) the start node to (inc.) the sink node.
+        """
+        assert self._bfs_run != 0, "Run the BFS before calling results."
+        cdef int st = self._st[sink_node]
+        assert sink_node != self._start_node and st != -1, "Unconnected nodes"
+
+        cdef list path = []
+        path.append(sink_node)
+        while st != -1:
+            path.insert(0, st)
+            st = self._st[st]
+        return path
 
     @cython.boundscheck(False)
     @cython.initializedcheck(False)
     @cython.wraparound(False)
     cpdef void run(self):
-        cdef int v
+        self._bfs_run = 1
+        cdef int v = self._start_node
         cdef int w
         cdef Queue queue = Queue()
         queue.push_head(v)
@@ -275,7 +356,7 @@ cdef class BFS:
         while not queue.empty():
             v = queue.pop_tail()
             for w in self._graph.nodeiter(v):
-                self._edge_counter += 1
+                self._edge_count += 1
                 if self._pre[w] == -1:
                     queue.push_head(w)
                     self._st[w] = v
@@ -289,10 +370,3 @@ cdef class BFS:
                         self._back_links.append(v, w)
                 else:
                     self._down_links.append(v, w)
-
-                if w == self._start_node:
-                    return
-
-
-
-
