@@ -129,7 +129,12 @@ cdef class Queue:
         self._tail = NULL
 
     def __dealloc__(self):
-        pass
+        cdef qentry * entry = self._head
+        cdef qentry * next
+        while entry != NULL:
+            next = entry.next
+            PyMem_Free(entry)
+            entry = next
 
     cpdef bint empty(self):
         if self._head == self._tail == NULL:
