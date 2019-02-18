@@ -123,6 +123,87 @@ cdef class MemoryViewArrayIter:
         raise StopIteration
 
 
+cdef class Queue:
+    def __cinit__(self):
+        self._head = NULL
+        self._tail = NULL
+
+    def __dealloc__(self):
+        pass
+
+    cpdef bint empty(self):
+        if self._head == self._tail == NULL:
+            return 1
+        return 0
+
+    cpdef push_head(self, int val):
+        cdef qentry * e = <qentry *>PyMem_Malloc(sizeof(qentry))
+        e.val = val
+
+        if self._head is NULL:
+            self._head = e
+            e.prev = NULL
+            if self._tail is NULL:
+                self._tail = e
+                e.next = NULL
+            else:
+                e.next = self._tail
+        else:
+            self._head.prev = e
+            e.next = self._head
+            self._head = e
+
+    cpdef int pop_head(self):
+        assert self.empty() == 0, "Queue is empty"
+        cdef int val = self._head.val
+        cdef qentry * h = self._head
+        if self._head == self._tail:
+            self._head = NULL
+            self._tail = NULL
+        else:
+            self._head = self._head.next
+            self._head.prev = NULL
+        PyMem_Free(h)
+        return val
+
+    cpdef int peek_head(self):
+        assert self.empty() == 0, "Queue is empty"
+        return self._head.val
+
+    cpdef push_tail(self, int val):
+        cdef qentry * e = <qentry *>PyMem_Malloc(sizeof(qentry))
+        e.val = val
+
+        if self._tail is NULL:
+            self._tail = e
+            e.next = NULL
+            if self._head is NULL:
+                self._head = e
+                e.prev = NULL
+            else:
+                e.prev = self._head
+        else:
+            self._tail.next = e
+            e.prev = self._tail
+            self._tail = e
+
+    cpdef int pop_tail(self):
+        assert self.empty() == 0, "Queue is empty"
+        cdef int val = self._tail.val
+        cdef qentry * t = self._tail
+        if self._tail == self._head:
+            self._tail = NULL
+            self._head = NULL
+        else:
+            self._tail = self._tail.prev
+            self._tail.next = NULL
+        PyMem_Free(t)
+        return val
+
+    cpdef int peek_tail(self):
+        assert self.empty() == 0, "Queue is empty"
+        return self._tail.val
+
 
 
 

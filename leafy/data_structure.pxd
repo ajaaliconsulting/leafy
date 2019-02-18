@@ -26,3 +26,21 @@ cdef class MemoryViewArrayIter:
     cdef int [::1] _mv_array
     cdef int _length
     cdef int _counter
+
+
+cdef struct qentry:
+    int val
+    qentry * prev
+    qentry * next
+
+
+cdef class Queue:
+    cdef qentry * _head
+    cdef qentry * _tail
+    cpdef push_head(self, int val)
+    cpdef int pop_head(self)
+    cpdef int peek_head(self)
+    cpdef push_tail(self, int val)
+    cpdef int pop_tail(self)
+    cpdef int peek_tail(self)
+    cpdef bint empty(self)
