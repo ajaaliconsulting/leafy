@@ -14,7 +14,7 @@ import numpy as np
 cimport cython
 
 from graph cimport GraphBase
-from data_structure cimport AdjacencyList
+from data_structure cimport AdjacencyList, Queue
 
 cdef class DFS:
     """Depth First Search of a graph starting from a defined node.
@@ -235,3 +235,64 @@ cdef class DFS:
 
         self._post[v] = self._post_counter
         self._post_counter += 1
+
+
+cdef class BFS:
+    def __cinit__(self, GraphBase graph not None, int start_node, int sink_node=-1):
+        assert -1 < start_node < graph.length, "BFS start node must be on the graph."
+        assert -1 <= sink_node < graph.length, "BFS sink node mush be on the graph."
+
+        self._graph = graph
+        self._start_node = start_node
+        self._sink_node = sink_node
+
+        self._pre = np.full(self._graph.length, -1, dtype=np.intc)  # Pre search counter
+        self._st = np.full(self._graph.length, -1, dtype=np.intc)  # Structural parent
+
+        self._tree_links = AdjacencyList(self._graph.length)
+        self._back_links = AdjacencyList(self._graph.length)
+        self._down_links = AdjacencyList(self._graph.length)
+        self._parent_links = AdjacencyList(self._graph.length)
+
+        self._pre_counter = 0
+        self._edge_counter = 0
+
+    cpdef list shortest_path(self, int sink_node):
+        return []
+
+    @cython.boundscheck(False)
+    @cython.initializedcheck(False)
+    @cython.wraparound(False)
+    cpdef void run(self):
+        cdef int v
+        cdef int w
+        cdef Queue queue = Queue()
+        queue.push_head(v)
+
+        self._pre[v] = self._pre_counter
+        self._pre_counter += 1
+
+        while not queue.empty():
+            v = queue.pop_tail()
+            for w in self._graph.nodeiter(v):
+                self._edge_counter += 1
+                if self._pre[w] == -1:
+                    queue.push_head(w)
+                    self._st[w] = v
+                    self._pre[w] = self._pre_counter
+                    self._pre_counter += 1
+                    self._tree_links.append(v, w)
+                elif self._pre[w] < self._pre[v]:
+                    if self._st[v] == w:
+                        self._parent_links.append(v, w)
+                    else:
+                        self._back_links.append(v, w)
+                else:
+                    self._down_links.append(v, w)
+
+                if w == self._start_node:
+                    return
+
+
+
+
