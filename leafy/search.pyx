@@ -14,7 +14,7 @@ import numpy as np
 cimport cython
 
 from graph cimport GraphBase
-from data_structure cimport AdjacencyList, Queue
+from data_structure cimport AdjacencyList, Queue, MemoryViewArrayIter
 
 cdef class DFS:
     """Depth First Search of a graph starting from a defined node.
@@ -32,6 +32,10 @@ cdef class DFS:
     - Articulation Points: All the nodes that if removed would split the graph.
     - Visited nodes: All the nodes reachable from the start node.
     - Unvisited nodes: All the nodes not reachable from the start node.
+
+    We can find the following attributes for Digraphs
+    - Is it a DAG: Is the digraph clear of back links, therefore, it's a dag.
+    - Topological sort: For DAGs sort the nodes in order of dependency from parent to child.
 
     Parameters
     ----------
@@ -68,6 +72,7 @@ cdef class DFS:
         self._pre = np.full(self._graph.length, -1, dtype=np.intc)  # Pre search counter
         self._st = np.full(self._graph.length, -1, dtype=np.intc)  # Structural parent
         self._post = np.full(self._graph.length, -1, dtype=np.intc) # Post search counter
+        self._tsi = np.full(self._graph.length, -1, dtype=np.intc) # Reverse topological sort
         self._lows = np.full(self._graph.length, -1, dtype=np.intc) # Used to find bridges
         self._cycle = np.full(self._graph.length, -1, dtype=np.intc)
         self._colour = np.full(self._graph.length, -1, dtype=np.intc) # Colour index for
@@ -162,6 +167,48 @@ cdef class DFS:
         assert self._dfs_run != 0, "Run the DFS before calling results."
         return self._edge_count
 
+    @property
+    def is_dag(self):
+        """Bool: Is a diagraph a dag. Only valid for direcected graphs."""
+        assert self._dfs_run != 0, "Run the DFS before calling results."
+        assert self._graph.directed == 1, "Only valid for directed graphs."
+        return self._back_links.count == 0
+
+    def topological_order(self):
+        """Rearrange the nodes on a horizontal line such that all directed edges
+        point from left to right.
+
+        This returns the nodes in precedence order. origin first
+
+        Returns
+        -------
+        Generator of ints
+            The node indices topologically sorted.
+        """
+        assert self._dfs_run != 0, "Run the DFS before calling results."
+        assert self.is_dag, "Only valid for DAGs."
+        cdef int counter = self._graph.length
+        while counter > 0:
+            yield self._tsi[counter-1]
+            counter -= 1
+
+    @property
+    def reverse_topological_order(self):
+        """Rearrange the nodes on a horizontal line such that all directed edges point
+        from right to left.
+
+        This returns the nodes in reverse precedence order. dependent first.
+
+        Returns
+        -------
+        Generator of ints
+            The node indices reverse topologically sorted.
+        """
+        assert self._dfs_run != 0, "Run the DFS before calling results."
+        assert self.is_dag, "Only valid for DAGs."
+        for i in self._tsi:
+            yield i
+
     @cython.boundscheck(False)
     @cython.initializedcheck(False)
     @cython.wraparound(False)
@@ -234,6 +281,7 @@ cdef class DFS:
             self._bridges.append(st, v)
 
         self._post[v] = self._post_counter
+        self._tsi[self._post_counter] = v
         self._post_counter += 1
 
 

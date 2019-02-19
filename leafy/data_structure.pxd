@@ -12,6 +12,7 @@ cdef class LinkedListIter:
 
 cdef class AdjacencyList:
     cdef int _array_length
+    cdef readonly int count
     cdef link ** _start
     cdef link ** _end
     cdef void append(self, int index, int value)

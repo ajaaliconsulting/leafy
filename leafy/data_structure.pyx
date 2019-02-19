@@ -27,6 +27,7 @@ cdef class AdjacencyList:
         self._array_length = length
         self._start = linked_list(length)
         self._end = linked_list(length)
+        self.count = 0
 
     def __dealloc__(self):
         cdef link *al
@@ -40,6 +41,7 @@ cdef class AdjacencyList:
 
     cdef void append(self, int index, int value):
         assert 0 <= index < self._array_length
+        self.count += 1
         if self._start[index] is NULL:
             self._start[index] = create_link(value, NULL)
             self._end[index] = self._start[index]
