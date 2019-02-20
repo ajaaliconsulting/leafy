@@ -12,6 +12,8 @@ EXTENSIONS = cythonize(
                   include_dirs=[numpy.get_include()]),
         Extension('leafy.search', ['leafy/search.pyx'],
                   include_dirs=[numpy.get_include()]),
+        Extension('leafy.digraph', ['leafy/digraph.pyx'],
+                  include_dirs=[numpy.get_include()]),
     ],
     annotate=True)
 
