@@ -67,9 +67,8 @@ cdef class DFS:
 
         self._pre = np.full(self._graph.length, -1, dtype=np.intc)  # Pre search counter
         self._st = np.full(self._graph.length, -1, dtype=np.intc)  # Structural parent
-        self._post = np.full(self._graph.length, -1, dtype=np.intc) # Post search counter
+        self._post = np.full(self._graph.length, self._graph.length+1, dtype=np.intc) # Post search counter
         self._lows = np.full(self._graph.length, -1, dtype=np.intc) # Used to find bridges
-        self._cycle = np.full(self._graph.length, -1, dtype=np.intc)
         self._colour = np.full(self._graph.length, -1, dtype=np.intc) # Colour index for
         self._art = np.full(self._graph.length, -1, dtype=np.intc)
 

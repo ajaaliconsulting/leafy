@@ -9,7 +9,6 @@ cdef class DFS:
     cdef int [::1] _st
     cdef int [::1] _post
     cdef int [::1] _lows
-    cdef int [::1] _cycle
     cdef int [::1] _colour
     cdef int [::1] _art
     cdef int _pre_counter
