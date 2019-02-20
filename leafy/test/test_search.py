@@ -3,10 +3,10 @@ Purpose:
 *. Test cases for search.py
 """
 import pytest
-from tabulate import tabulate
 
 from leafy.graph import Graph, SparseGraph
 from leafy.search import DFS, BFS
+from leafy.test.utils import disanostics_table
 
 
 def small_graph(graph_type):
@@ -71,14 +71,6 @@ def small_graph_bfs(request):
     bfs = BFS(graph, 16)
     bfs.run()
     return bfs
-
-
-def disanostics_table(diagnostics):
-    table = [
-        [k, *v] for k, v in diagnostics.items()
-    ]
-    headers = ['', *list(range(len(table[0]) - 1))]
-    return tabulate(table, headers)
 
 
 class TestDFS:
