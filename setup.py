@@ -1,33 +1,61 @@
 import numpy
-from Cython.Build import cythonize
-from Cython.Distutils import build_ext
 from setuptools import setup, Extension
 
+DEVELOPEMENT_MODE = False
 
-EXTENSIONS = cythonize(
-    [
-        Extension('leafy.data_structure', ['leafy/data_structure.pyx'],
-                  include_dirs=[numpy.get_include()]),
-        Extension('leafy.graph', ['leafy/graph.pyx'],
-                  include_dirs=[numpy.get_include()]),
-        Extension('leafy.search', ['leafy/search.pyx'],
-                  include_dirs=[numpy.get_include()]),
-        Extension('leafy.digraph', ['leafy/digraph.pyx'],
-                  include_dirs=[numpy.get_include()]),
+EXTENSIONS = [
+    Extension('leafy.data_structure', ['leafy/data_structure.pyx'],
+              include_dirs=[numpy.get_include()]),
+    Extension('leafy.graph', ['leafy/graph.pyx'],
+              include_dirs=[numpy.get_include()]),
+    Extension('leafy.search', ['leafy/search.pyx'],
+              include_dirs=[numpy.get_include()]),
+    Extension('leafy.digraph', ['leafy/digraph.pyx'],
+              include_dirs=[numpy.get_include()]),
+]
+
+if DEVELOPEMENT_MODE:
+    pass
+
+    # annotate=True)
+
+
+def readme():
+    with open('README.md') as f:
+        return f.read()
+
+
+setup(
+    name='leafy',
+    version='0.1.0a1',
+    description='Another fast graph algorithms library',
+    long_description=readme(),
+    long_description_content_type='text/markdown',
+    keywords="graph dag algorithm library",
+    url='https://github.com/ajaali/leafy',
+    author='Ahmed Ali',
+    author_email='ahmed@ajaali.com',
+    license='MIT',
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Cython',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        "Topic :: Scientific/Engineering :: Mathematics",
+        "Topic :: Software Development :: Libraries",
     ],
-    annotate=True)
-
-if __name__ == "__main__":
-    setup(install_requires=[],
-          packages=['leafy'],
-          zip_safe=False,
-          name='leafy',
-          version='0a0',
-          description='Python graph algorithims',
-          author='Ahmed Ali',
-          author_email='ahmed@ajaali.com',
-          url='https://github.com/ajaali/leafy',
-          license='',
-          cmdclass={"build_ext": build_ext},
-          ext_modules=EXTENSIONS
-          )
+    python_requires=">=3.6",
+    install_requires=[
+        'numpy>=1.16.1',
+        'cython>=0.29.4',
+    ],
+    tests_require=[
+        'pytest>=4.2.1',
+        'tabulate>=0.8.2',
+    ],
+    packages=['leafy'],
+    zip_safe=False,
+    ext_modules=EXTENSIONS,
+)
