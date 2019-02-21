@@ -115,7 +115,6 @@ cdef class DFS(_DFS):
         self._pre_counter += 1
 
         for w in self._graph.nodeiter(v):
-            # print(v, '-', w)
             self._edge_count += 1
             if self._pre[w] == -1:
                 self._tree_links.append(v, w)

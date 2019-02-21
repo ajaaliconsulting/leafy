@@ -5,3 +5,5 @@ cdef class DFS(_DFS):
     cdef int [::1] _cycle
     cdef int [::1] _rts
     cdef AdjacencyList _cross_links
+
+

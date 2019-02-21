@@ -50,11 +50,13 @@ class TestDagDFS:
     def test_topological_sort(self, dag_dfs):
         assert list(dag_dfs.topological_order()) == [
             0, 6, 2, 3, 5, 4, 9, 11, 12, 10, 1
-        ]
+        ], dfs_diagnostics(dag_dfs)
 
     def test_reverse_topological_sort(self, dag_dfs):
         assert list(dag_dfs.reverse_topological_order()) == [
             1, 10, 12, 11, 9, 4, 5, 3, 2, 6, 0
-        ]
+        ], dfs_diagnostics(dag_dfs)
+
+
 
 
