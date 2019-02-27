@@ -39,10 +39,10 @@ the same edges can be defined as a directed `SparseGraph`
 ### Search
 
 Leafy can run Depth First Search (DFS) and Breadth First Search (BFS) on a graph and
-return the graph search properties
+return the graph search properties.
 
 To run a search we need to define the graph to search and the node to start from.
-Before you can view the properties you must run the search with `.run()`.
+Before you can view the properties we must call `.run()`.
 
 ```python
 >>> from leafy.search import DFS
