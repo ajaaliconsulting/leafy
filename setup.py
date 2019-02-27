@@ -1,7 +1,7 @@
 import numpy
 from setuptools import setup, Extension
 
-DEVELOPEMENT_MODE = False
+DEVELOPEMENT_MODE = True
 
 EXTENSIONS = [
     Extension('leafy.data_structure', ['leafy/data_structure.pyx'],
@@ -14,10 +14,10 @@ EXTENSIONS = [
               include_dirs=[numpy.get_include()]),
 ]
 
+setup_kwargs = {}
 if DEVELOPEMENT_MODE:
-    pass
-
-    # annotate=True)
+    from Cython.Build import cythonize
+    EXTENSIONS = cythonize(EXTENSIONS, annotate=True)
 
 
 def readme():
