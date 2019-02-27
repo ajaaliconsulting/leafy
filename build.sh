@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+python3.6 -m venv venv_b36
+source venv_b36/bin/activate
+python -m pip install -U -r build_requirements.txt
+python setup.py bdist_wheel
+python setup.py sdist
+rm -r ./venv_b36
+
+python3.7 -m venv venv_b37
+source venv_b37/bin/activate
+python -m pip install -r build_requirements.txt
+python setup.py bdist_wheel
+rm -r ./venv_b37
+
+docker run -it -v `pwd`:/io quay.io/pypa/manylinux1_x86_64 /io/build_linux_wheels.sh

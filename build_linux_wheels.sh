@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
-cd /io
-/opt/python/cp36-cp36m/bin/python -m pip install -r build_requirements.txt
-/opt/python/cp36-cp36m/bin/python setup.py bdist_wheel
-/opt/python/cp37-cp37m/bin/python -m pip install -r build_requirements.txt
-/opt/python/cp37-cp37m/bin/python setup.py bdist_wheel
 
+# Compile wheels
+for PYVER in cp36 cp37; do
+    for PYBIN in /opt/python/${PYVER}*/bin; do
+        "${PYBIN}/pip" install -r /io/build_requirements.txt
+        "${PYBIN}/pip" wheel /io/ -w wheelhouse/
+    done
+done
+
+# Bundle external shared libraries into the wheels
+for whl in wheelhouse/leafy*.whl; do
+    auditwheel repair "$whl" -w /io/dist/
+done
