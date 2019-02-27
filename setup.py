@@ -40,6 +40,7 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
+        "Operating System :: OS Independent",
         'Programming Language :: Cython',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
