@@ -1,7 +1,7 @@
 import numpy
 from setuptools import setup, Extension
 
-DEVELOPEMENT_MODE = True
+DEVELOPEMENT_MODE = False
 
 EXTENSIONS = [
     Extension('leafy.data_structure', ['leafy/data_structure.pyx'],
@@ -27,7 +27,7 @@ def readme():
 
 setup(
     name='leafy',
-    version='0.1.0a1',
+    version='0.1.0a2',
     description='Another fast graph algorithms library',
     long_description=readme(),
     long_description_content_type='text/markdown',
