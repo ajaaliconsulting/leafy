@@ -2,11 +2,32 @@ import numpy as np
 cimport numpy as np
 cimport cython
 
-from data_structure cimport AdjacencyList, MemoryViewArrayIter, LinkedListIter
+from data_structure cimport AdjacencyList, MemoryViewArrayIter, LinkedListIter, MVAIndexIter
 
 cdef class GraphBase:
+    def __cinit__(self, int n, bint directed=0):
+        self.length = n
+        self.directed = directed
+        self.edge_count = 0
+        self.in_degrees = np.zeros(n, dtype=np.intc)
+        self.out_degrees = np.zeros(n, dtype=np.intc)
+
     cpdef void add_edge(self, int v, int w):
         return
+
+    @property
+    def sources(self):
+        return self.sources()
+
+    @property
+    def sinks(self):
+        return self.sinks()
+
+    cdef MVAIndexIter sources(self):
+        return MVAIndexIter(self.in_degrees, self.length, 0)
+
+    cdef MVAIndexIter sinks(self):
+        return MVAIndexIter(self.out_degrees, self.length, 0)
 
 
 cdef class Graph(GraphBase):
@@ -37,9 +58,6 @@ cdef class Graph(GraphBase):
          [0, 0]]
         """
         self.dense = 1
-        self.length = n
-        self.directed = directed
-        self.edge_count = 0
         self.adj_matrix = np.zeros((n, n), dtype=np.intc)
 
     @property
@@ -58,9 +76,13 @@ cdef class Graph(GraphBase):
             index of vector w
         """
         self.edge_count += 1
+        self.out_degrees[v] +=1
+        self.in_degrees[w] +=1
         self.adj_matrix[v][w] = 1
         if not self.directed:
             self.edge_count += 1
+            self.out_degrees[w] +=1
+            self.in_degrees[v] +=1
             self.adj_matrix[w][v] = 1
 
     @cython.boundscheck(False)
@@ -101,9 +123,6 @@ cdef class SparseGraph(GraphBase):
         []]
         """
         self.dense = 0
-        self.length = n
-        self.directed = directed
-        self.edge_count = 0
         self.adj_list = AdjacencyList(n)
 
     @property
@@ -122,9 +141,13 @@ cdef class SparseGraph(GraphBase):
             index of vector w
         """
         self.edge_count += 1
+        self.out_degrees[v] +=1
+        self.in_degrees[w] +=1
         self.adj_list.append(v, w)
         if not self.directed:
             self.edge_count += 1
+            self.out_degrees[w] +=1
+            self.in_degrees[v] +=1
             self.adj_list.append(w, v)
 
     cpdef LinkedListIter nodeiter(self, int node):

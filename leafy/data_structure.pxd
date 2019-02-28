@@ -29,6 +29,13 @@ cdef class MemoryViewArrayIter:
     cdef int _counter
 
 
+cdef class MVAIndexIter:
+    cdef int[::1] _mv_array
+    cdef int _length
+    cdef int _counter
+    cdef int _value
+
+
 cdef struct qentry:
     int val
     qentry * prev

@@ -125,6 +125,28 @@ cdef class MemoryViewArrayIter:
         raise StopIteration
 
 
+cdef class MVAIndexIter:
+    """Memory View Array iterator returning the index of the value matches"""
+    def __cinit__(self, int [::1] mv, int length, int value):
+        self._length = length
+        self._mv_array = mv
+        self._value = value
+        self._counter = -1
+
+    def __iter__(self):
+        return self
+
+    @cython.boundscheck(False)
+    @cython.initializedcheck(False)
+    @cython.wraparound(False)
+    def __next__(self):
+        while self._counter < self._length -1:
+            self._counter += 1
+            if self._mv_array[self._counter] == self._value:
+                return self._counter
+        raise StopIteration
+
+
 cdef class Queue:
     def __cinit__(self):
         self._head = NULL
