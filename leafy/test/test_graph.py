@@ -29,7 +29,6 @@ def small_dag():
     return dag
 
 
-
 def test_source_sink(small_dag):
     assert list(small_dag.sources) == [0, 8]
     assert list(small_dag.sinks) == [1, 5, 10, 12]
