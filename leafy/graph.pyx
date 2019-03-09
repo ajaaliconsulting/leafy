@@ -17,10 +17,12 @@ cdef class GraphBase:
 
     @property
     def sources(self):
+        """List of ints: All nodes which have an in-degree of zero."""
         return self.sources()
 
     @property
     def sinks(self):
+        """List of ints: All nodes which have an out-degree of zero."""
         return self.sinks()
 
     cdef MVAIndexIter sources(self):
