@@ -106,7 +106,7 @@ cdef class LinkedListIter:
 
 
 cdef class MemoryViewArrayIter:
-    def __cinit__(self, int [::1] mv, int length):
+    def __cinit__(self, double [::1] mv, int length):
         self._length = length
         self._mv_array = mv
         self._counter = -1
@@ -120,7 +120,7 @@ cdef class MemoryViewArrayIter:
     def __next__(self):
         while self._counter < self._length -1:
             self._counter += 1
-            if self._mv_array[self._counter] != 0:
+            if self._mv_array[self._counter] < 100:
                 return self._counter
         raise StopIteration
 

@@ -6,10 +6,11 @@ import pytest
 
 from leafy.graph import Graph
 
+
 @pytest.fixture()
 def small_dag():
     dag = Graph(13, True)
-    dag.add_edge(0, 1)
+    dag.add_edge(0, 1, 0.5)
     dag.add_edge(0, 2)
     dag.add_edge(0, 3)
     dag.add_edge(0, 5)
@@ -32,3 +33,10 @@ def small_dag():
 def test_source_sink(small_dag):
     assert list(small_dag.sources) == [0, 8]
     assert list(small_dag.sinks) == [1, 5, 10, 12]
+
+
+def test_graph_weights(small_dag):
+    assert small_dag.edge_weight(0, 1) == 0.5
+    assert small_dag.edge_weight(0, 2) == 1.0
+    assert small_dag.edge_weight(2, 4) == 101.0
+

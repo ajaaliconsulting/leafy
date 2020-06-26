@@ -12,7 +12,7 @@ cdef class GraphBase:
         self.in_degrees = np.zeros(n, dtype=np.intc)
         self.out_degrees = np.zeros(n, dtype=np.intc)
 
-    cpdef void add_edge(self, int v, int w):
+    cpdef void add_edge(self, int v, int w, double weight=1.0):
         return
 
     @property
@@ -30,6 +30,9 @@ cdef class GraphBase:
 
     cdef MVAIndexIter sinks(self):
         return MVAIndexIter(self.out_degrees, self.length, 0)
+
+    cpdef double edge_weight(self, int v, int w):
+        return 0.0
 
 
 cdef class Graph(GraphBase):
@@ -60,14 +63,14 @@ cdef class Graph(GraphBase):
          [0, 0]]
         """
         self.dense = 1
-        self.adj_matrix = np.zeros((n, n), dtype=np.intc)
+        self.adj_matrix = np.full((n, n), fill_value=101.0, dtype=np.float64)
 
     @property
     def matrix(self):
         """Get a numpy ndarray of the graph adjacency matrix."""
         return np.asarray(self.adj_matrix)
 
-    cpdef void add_edge(self, int v, int w):
+    cpdef void add_edge(self, int v, int w, double weight=1.0):
         """Add an edge between the vectors v and w.
         
         Parameters
@@ -76,16 +79,18 @@ cdef class Graph(GraphBase):
             index of vector v
         w : int
             index of vector w
+        weight: float
+            The weight associated to the added edge, defaults to 1.
         """
         self.edge_count += 1
         self.out_degrees[v] +=1
         self.in_degrees[w] +=1
-        self.adj_matrix[v][w] = 1
+        self.adj_matrix[v][w] = weight
         if not self.directed:
             self.edge_count += 1
             self.out_degrees[w] +=1
             self.in_degrees[v] +=1
-            self.adj_matrix[w][v] = 1
+            self.adj_matrix[w][v] = weight
 
     @cython.boundscheck(False)
     @cython.initializedcheck(False)
@@ -93,6 +98,9 @@ cdef class Graph(GraphBase):
     cpdef MemoryViewArrayIter nodeiter(self, int node):
         """ArrayIter: Iterator object over the edges of a node."""
         return MemoryViewArrayIter(self.adj_matrix[node][:], self.length)
+
+    cpdef double edge_weight(self, int v, int w):
+        return self.adj_matrix[v][w]
 
 
 cdef class SparseGraph(GraphBase):
@@ -132,7 +140,7 @@ cdef class SparseGraph(GraphBase):
         """Get a python list representation of the graph adjacency list."""
         return self.adj_list.as_py_list()
 
-    cpdef void add_edge(self, int v, int w):
+    cpdef void add_edge(self, int v, int w, double weight=1.0):
         """Add an edge between the vectors v and w.
         
         Parameters
@@ -141,6 +149,8 @@ cdef class SparseGraph(GraphBase):
             index of vector v
         w : int
             index of vector w
+        weight: float
+            The weight associated to the added edge, defaults to 1.            
         """
         self.edge_count += 1
         self.out_degrees[v] +=1

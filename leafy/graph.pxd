@@ -7,13 +7,14 @@ cdef class GraphBase:
     cdef bint dense
     cdef readonly int[::1] in_degrees
     cdef readonly int[::1] out_degrees
-    cpdef void add_edge(self, int v, int w)
+    cpdef void add_edge(self, int v, int w, double weight=*)
     cdef MVAIndexIter sources(self)
     cdef MVAIndexIter sinks(self)
+    cpdef double edge_weight(self, int v, int w)
 
 
 cdef class Graph(GraphBase):
-    cdef readonly int[:,::1] adj_matrix
+    cdef readonly double[:,::1] adj_matrix
     cpdef MemoryViewArrayIter nodeiter(self, int node)
 
 
