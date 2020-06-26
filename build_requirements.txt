@@ -1,5 +1,5 @@
 pip
 setuptools
 wheel
-numpy==1.16.1
-cython==0.29.4
+numpy==1.19.0
+cython==0.29.20
