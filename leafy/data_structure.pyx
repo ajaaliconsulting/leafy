@@ -1,10 +1,13 @@
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 cimport cython
 
-cdef link *create_link(int v, link *prev_link):
+PYMAXWEIGHT = MAXWEIGHT
+
+cdef link *create_link(int v, link *prev_link, double weight):
     cdef link *x = <link *> PyMem_Malloc(sizeof(link))
     x.val = v
     x.next = NULL
+    x.weight = weight
     if prev_link is not NULL:
         prev_link.next = x
         x.counter = prev_link.counter + 1
@@ -39,20 +42,20 @@ cdef class AdjacencyList:
                 PyMem_Free(al)
                 al = next_al
 
-    cdef void append(self, int index, int value):
+    cpdef void append(self, int index, int value, double weight=0.0):
         assert 0 <= index < self._array_length
         self.count += 1
         if self._start[index] is NULL:
-            self._start[index] = create_link(value, NULL)
+            self._start[index] = create_link(value, NULL, weight)
             self._end[index] = self._start[index]
         else:
-            self._end[index] = create_link(value, self._end[index])
+            self._end[index] = create_link(value, self._end[index], weight)
 
-    cdef int length(self, int index):
+    cpdef int length(self, int index):
         assert 0 <= index < self._array_length
         return self._end[index].counter + 1
 
-    cdef list as_py_list(self):
+    cpdef list as_py_list(self):
         cdef link *al
         cdef int i
         ret_list = []
@@ -65,7 +68,7 @@ cdef class AdjacencyList:
             ret_list.append(i_list)
         return ret_list
 
-    cdef list as_py_pairs(self):
+    cpdef list as_py_pairs(self):
         cdef link *al
         cdef int i
         cdef list ret_list = []
@@ -78,11 +81,7 @@ cdef class AdjacencyList:
                 al = al.next
         return ret_list
 
-    cdef dict as_py_dict(self):
-        cdef dict py_dict = dict(self.as_py_pairs())
-        return py_dict
-
-    cdef LinkedListIter listiter(self, int index):
+    cpdef LinkedListIter listiter(self, int index):
         return LinkedListIter.create(self._start[index])
 
 
@@ -97,9 +96,9 @@ cdef class LinkedListIter:
         return self
 
     def __next__(self):
-        cdef int val
+        cdef (int, double) val
         if self.ll is not NULL:
-            val = self.ll.val
+            val = (self.ll.val, self.ll.weight)
             self.ll = self.ll.next
             return val
         raise StopIteration
@@ -120,8 +119,8 @@ cdef class MemoryViewArrayIter:
     def __next__(self):
         while self._counter < self._length -1:
             self._counter += 1
-            if self._mv_array[self._counter] < 100:
-                return self._counter
+            if self._mv_array[self._counter] < MAXWEIGHT:
+                return self._counter, self._mv_array[self._counter]
         raise StopIteration
 
 

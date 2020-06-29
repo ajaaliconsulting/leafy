@@ -1,5 +1,9 @@
+cdef extern from "constant.h":
+    cdef double MAXWEIGHT
+
 cdef struct link:
     int val
+    double weight
     int counter
     link *next
 
@@ -15,12 +19,11 @@ cdef class AdjacencyList:
     cdef readonly int count
     cdef link ** _start
     cdef link ** _end
-    cdef void append(self, int index, int value)
-    cdef int length(self, int index)
-    cdef list as_py_list(self)
-    cdef list as_py_pairs(self)
-    cdef dict as_py_dict(self)
-    cdef LinkedListIter listiter(self, int index)
+    cpdef void append(self, int index, int value, double weight=*)
+    cpdef int length(self, int index)
+    cpdef list as_py_list(self)
+    cpdef list as_py_pairs(self)
+    cpdef LinkedListIter listiter(self, int index)
 
 
 cdef class MemoryViewArrayIter:

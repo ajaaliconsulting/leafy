@@ -2,7 +2,9 @@ import numpy as np
 cimport numpy as np
 cimport cython
 
-from data_structure cimport AdjacencyList, MemoryViewArrayIter, LinkedListIter, MVAIndexIter
+from data_structure cimport (
+    AdjacencyList, MemoryViewArrayIter, LinkedListIter, MVAIndexIter, MAXWEIGHT
+)
 
 cdef class GraphBase:
     def __cinit__(self, int n, bint directed=0):
@@ -63,7 +65,7 @@ cdef class Graph(GraphBase):
          [0, 0]]
         """
         self.dense = 1
-        self.adj_matrix = np.full((n, n), fill_value=101.0, dtype=np.float64)
+        self.adj_matrix = np.full((n, n), fill_value=MAXWEIGHT, dtype=np.float64)
 
     @property
     def matrix(self):
@@ -155,12 +157,18 @@ cdef class SparseGraph(GraphBase):
         self.edge_count += 1
         self.out_degrees[v] +=1
         self.in_degrees[w] +=1
-        self.adj_list.append(v, w)
+        self.adj_list.append(v, w, weight)
         if not self.directed:
             self.edge_count += 1
             self.out_degrees[w] +=1
             self.in_degrees[v] +=1
-            self.adj_list.append(w, v)
+            self.adj_list.append(w, v, weight)
 
     cpdef LinkedListIter nodeiter(self, int node):
         return self.adj_list.listiter(node)
+
+    cpdef double edge_weight(self, int v, int w):
+        for i, weight in self.adj_list.listiter(v):
+            if i == w:
+                return weight
+        return MAXWEIGHT

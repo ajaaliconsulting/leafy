@@ -47,10 +47,10 @@ setup(
         "Topic :: Scientific/Engineering :: Mathematics",
         "Topic :: Software Development :: Libraries",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     install_requires=[
-        'numpy>=1.16.1',
-        'cython>=0.29.4',
+        'numpy==1.19.0',
+        'cython==0.29.20'
     ],
     tests_require=[
         'pytest>=4.2.1',
