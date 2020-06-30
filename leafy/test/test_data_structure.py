@@ -5,7 +5,10 @@ Purpose:
 import numpy as np
 import pytest
 
-from leafy.data_structure import Queue, AdjacencyList, PYMAXWEIGHT, MemoryViewArrayIter
+from leafy.data_structure import (
+    Queue, AdjacencyList, PYMAXWEIGHT, MemoryViewArrayIter,
+    IndexHeapPriorityQueue,
+)
 
 
 @pytest.fixture
@@ -88,3 +91,29 @@ class TestQueue:
         assert q.pop_tail() == 3
         assert q.pop_tail() == 4
         assert q.empty()
+
+
+def test_priority_queue_asc():
+    #                           0    1    2    3    4   5
+    weighted_list = np.array([0.6, 0.2, 0.5, 0.4, 0.3, 0.22])
+    pqueue = IndexHeapPriorityQueue(weighted_list, True)
+    assert pqueue.empty() is False
+    assert pqueue.get_next() == 1, list(pqueue._index_queue[1:])
+    assert pqueue.get_next() == 5, list(pqueue._index_queue[1:])
+    assert pqueue.get_next() == 4, list(pqueue._index_queue[1:])
+    assert pqueue.get_next() == 3, list(pqueue._index_queue[1:])
+    assert pqueue.get_next() == 2, list(pqueue._index_queue[1:])
+    assert pqueue.get_next() == 0, list(pqueue._index_queue[1:])
+
+
+def test_priority_queue_desc():
+    #                           0    1    2    3    4   5
+    weighted_list = np.array([0.6, 0.2, 0.5, 0.4, 0.3, 0.22])
+    pqueue = IndexHeapPriorityQueue(weighted_list, False)
+    assert pqueue.empty() is False
+    assert pqueue.get_next() == 0, list(pqueue._index_queue[1:])
+    assert pqueue.get_next() == 2, list(pqueue._index_queue[1:])
+    assert pqueue.get_next() == 3, list(pqueue._index_queue[1:])
+    assert pqueue.get_next() == 4, list(pqueue._index_queue[1:])
+    assert pqueue.get_next() == 5, list(pqueue._index_queue[1:])
+    assert pqueue.get_next() == 1, list(pqueue._index_queue[1:])

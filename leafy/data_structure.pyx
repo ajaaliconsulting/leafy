@@ -1,3 +1,5 @@
+cimport numpy
+import numpy as np
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 cimport cython
 
@@ -233,7 +235,54 @@ cdef class Queue:
         return self._tail.val
 
 
+cdef class IndexHeapPriorityQueue:
+    def __cinit__(self, double[::1] mv_client, bint order_asc):
+        self._client_array = mv_client
+        self._order_asc = order_asc
+        self._index_queue = np.empty(len(mv_client)+1, dtype=np.intc)
+        self._length = 0
+        for i in range(len(self._client_array)):
+            self._insert(i)
 
+    cdef _insert(self, int i):
+        self._length = self._length + 1
+        self._index_queue[self._length] = i
+        self.fix_up(self._length)
 
+    cdef _exchange(self, int i, int j):
+        cdef int t = self._index_queue[i]
+        self._index_queue[i] = self._index_queue[j]
+        self._index_queue[j] = t
+
+    cdef bint _compare(self, int i, int j):
+        if self._order_asc:
+            return self._client_array[self._index_queue[i]] > self._client_array[self._index_queue[j]]
+        return self._client_array[self._index_queue[i]] < self._client_array[self._index_queue[j]]
+
+    cdef fix_up(self, int k):
+        while k > 1 and self._compare(k/2, k):
+            self._exchange(k, k/2)
+            k = k/2
+
+    cdef fix_down(self, int k):
+        cdef int j
+        while 2 * k <= self._length-1:
+            j = 2 * k
+            if j < self._length-1 and self._compare(j, j+1):
+                j = j + 1
+            if self._compare(k, j) == 0:
+                break
+            self._exchange(k, j)
+            k = j
+
+    cpdef bint empty(self):
+        return self._length == 0
+
+    cpdef int get_next(self):
+        self._exchange(1, self._length)
+        cdef ret_index = self._index_queue[self._length]
+        self._length = self._length - 1
+        self.fix_down(1)
+        return ret_index
 
 

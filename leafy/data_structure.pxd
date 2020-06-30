@@ -55,3 +55,19 @@ cdef class Queue:
     cpdef int pop_tail(self)
     cpdef int peek_tail(self)
     cpdef bint empty(self)
+
+
+
+cdef class IndexHeapPriorityQueue:
+    cdef double[::1] _client_array
+    cdef bint _order_asc
+    cdef readonly int[::1] _index_queue
+    cdef int _length
+    cdef _insert(self, int i)
+    cdef _exchange(self, int i, int j)
+    cdef bint _compare(self, int i, int j)
+    cdef fix_up(self, int k)
+    cdef fix_down(self, int k)
+    cpdef bint empty(self)
+    cpdef int get_next(self)
+
