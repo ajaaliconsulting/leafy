@@ -51,7 +51,7 @@ cdef class DFS:
     >>> dfs = DFS(g, 0)
     >>> dfs.run()
 
-    Once the algorithm has run you can then as the dfs for it's attributes:
+    Once the algorithm has run you can then query the dfs for it's attributes:
     >>> dfs.two_colourability
     False
 
@@ -59,7 +59,7 @@ cdef class DFS:
 
     def __cinit__(self, GraphBase graph not None, int start_node, int sink_node=-1):
         assert -1 < start_node < graph.length, "DFS start node must be on the graph."
-        assert -1 <= sink_node < graph.length, "DFS sink node mush be on the graph."
+        assert -1 <= sink_node < graph.length, "DFS sink node must be on the graph."
 
         self._graph = graph
         self._start_node = start_node
