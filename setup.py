@@ -29,7 +29,7 @@ def readme():
 
 setup(
     name='leafy',
-    version='0.1.0a2',
+    version='0.1.0',
     description='Another fast graph algorithms library',
     long_description=readme(),
     long_description_content_type='text/markdown',
@@ -44,7 +44,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         "Operating System :: OS Independent",
         'Programming Language :: Cython',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         "Topic :: Scientific/Engineering :: Mathematics",
         "Topic :: Software Development :: Libraries",
