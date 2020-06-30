@@ -12,6 +12,8 @@ EXTENSIONS = [
               include_dirs=[numpy.get_include()]),
     Extension('leafy.digraph', ['leafy/digraph.pyx'],
               include_dirs=[numpy.get_include()]),
+    Extension('leafy.shortest_path', ['leafy/shortest_path.pyx'],
+              include_dirs=[numpy.get_include()]),
 ]
 
 setup_kwargs = {}
