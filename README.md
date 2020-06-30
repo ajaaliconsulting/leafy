@@ -69,3 +69,16 @@ True
 >>> dfs.topological_order()
 [0, 6, 2, 3, 5, 4, 9, 11, 12, 10, 1]
 ```
+
+### Shortest Distance
+
+For network shortest path leafy supports single source Dijkstra which can be imported from `leafy.shortest_path`
+
+```python
+>>> from leafy.shortest_path import Dijkstra
+>>> dag = small_network()
+>>> dij = Dijkstra(dag, 0)
+>>> dij.run()
+>>> dij.path(3)
+[3, 7, 2, 1, 0]
+```
