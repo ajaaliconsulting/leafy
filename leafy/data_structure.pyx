@@ -240,31 +240,37 @@ cdef class IndexHeapPriorityQueue:
         self._client_array = mv_client
         self._order_asc = order_asc
         self._index_queue = np.empty(len(mv_client)+1, dtype=np.intc)
+        self._item_position = np.empty(len(mv_client), dtype=np.intc)
         self._length = 0
         for i in range(len(self._client_array)):
             self._insert(i)
 
-    cdef _insert(self, int i):
+    cdef void _insert(self, int i):
         self._length = self._length + 1
         self._index_queue[self._length] = i
+        self._item_position[i] = self._length
         self.fix_up(self._length)
 
-    cdef _exchange(self, int i, int j):
-        cdef int t = self._index_queue[i]
-        self._index_queue[i] = self._index_queue[j]
-        self._index_queue[j] = t
+    cdef void _exchange(self, int i, int j):
+        cdef int ti = self._index_queue[i]
+        cdef int tj = self._index_queue[j]
+        self._index_queue[i] = tj
+        self._item_position[tj] = i
+
+        self._index_queue[j] = ti
+        self._item_position[ti] = j
 
     cdef bint _compare(self, int i, int j):
         if self._order_asc:
             return self._client_array[self._index_queue[i]] > self._client_array[self._index_queue[j]]
         return self._client_array[self._index_queue[i]] < self._client_array[self._index_queue[j]]
 
-    cdef fix_up(self, int k):
+    cdef void fix_up(self, int k):
         while k > 1 and self._compare(k/2, k):
             self._exchange(k, k/2)
             k = k/2
 
-    cdef fix_down(self, int k):
+    cdef void fix_down(self, int k):
         cdef int j
         while 2 * k <= self._length-1:
             j = 2 * k
@@ -284,5 +290,9 @@ cdef class IndexHeapPriorityQueue:
         self._length = self._length - 1
         self.fix_down(1)
         return ret_index
+
+    cpdef void change(self, int i):
+        self.fix_up(self._item_position[i])
+        self.fix_down(self._item_position[i])
 
 

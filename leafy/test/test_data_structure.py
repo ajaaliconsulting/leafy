@@ -117,3 +117,18 @@ def test_priority_queue_desc():
     assert pqueue.get_next() == 4, list(pqueue._index_queue[1:])
     assert pqueue.get_next() == 5, list(pqueue._index_queue[1:])
     assert pqueue.get_next() == 1, list(pqueue._index_queue[1:])
+
+
+def test_priority_queue_change():
+    weighted_list = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    pqueue = IndexHeapPriorityQueue(weighted_list, True)
+    weighted_list[1] = 0.2
+    pqueue.change(1)
+    assert pqueue.get_next() == 1
+    weighted_list[5] = 0.2
+    pqueue.change(5)
+    assert pqueue.get_next() == 5
+    weighted_list[4] = 0.2
+    pqueue.change(4)
+    assert pqueue.get_next() == 4
+

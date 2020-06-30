@@ -62,12 +62,14 @@ cdef class IndexHeapPriorityQueue:
     cdef double[::1] _client_array
     cdef bint _order_asc
     cdef readonly int[::1] _index_queue
+    cdef readonly int[::1] _item_position
     cdef int _length
-    cdef _insert(self, int i)
-    cdef _exchange(self, int i, int j)
+    cdef void _insert(self, int i)
+    cdef void _exchange(self, int i, int j)
     cdef bint _compare(self, int i, int j)
-    cdef fix_up(self, int k)
-    cdef fix_down(self, int k)
+    cdef void fix_up(self, int k)
+    cdef void fix_down(self, int k)
     cpdef bint empty(self)
     cpdef int get_next(self)
+    cpdef void change(self, int k)
 
