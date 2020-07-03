@@ -20,7 +20,7 @@ install:
 
 build: off
 
-#test_script:
+test_script:
   # Put your test command here.
   # If you don't need to build C extensions on 64-bit Python 3.3 or 3.4,
   # you can remove "build.cmd" from the front of the command, as it's
@@ -28,8 +28,8 @@ build: off
   # Note that you must use the environment variable %PYTHON% to refer to
   # the interpreter you're using - Appveyor does not do anything special
   # to put the Python version you want to use on PATH.
-#  - "%PYTHON%\\python.exe build_ext --inplace"
-#  - "%PYTHON%\\python.exe -m pytest"
+  - "%PYTHON%\\python.exe build_ext --inplace"
+  - "%PYTHON%\\python.exe -m pytest"
 
 
 after_test:
