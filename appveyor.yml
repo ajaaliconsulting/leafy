@@ -14,8 +14,8 @@ environment:
 
 install:
   # We need wheel installed to build wheels
-  - "%PYTHON%\\python.exe -m pip install pytest"
   - "%PYTHON%\\python.exe -m pip install -r build_requirements.txt"
+  - "%PYTHON%\\python.exe -m pip install -r test_requirements.txt"
   - "%PYTHON%\\python.exe -m pip install wheel"
 
 build: off
