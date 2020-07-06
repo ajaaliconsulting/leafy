@@ -11,10 +11,11 @@ under each algorithm.
 
 cimport numpy
 import numpy as np
+from cpython.mem cimport PyMem_Free
 cimport cython
 
 from graph cimport GraphBase
-from data_structure cimport AdjacencyList, Queue
+from data_structure cimport AdjacencyList, Queue, int1dim, int1dim_to_list
 
 cdef class DFS:
     """Depth First Search of a graph starting from a defined node.
@@ -65,12 +66,12 @@ cdef class DFS:
         self._start_node = start_node
         self._sink_node = sink_node
 
-        self._pre = np.full(self._graph.length, -1, dtype=np.intc)  # Pre search counter
-        self._st = np.full(self._graph.length, -1, dtype=np.intc)  # Structural parent
-        self._post = np.full(self._graph.length, self._graph.length+1, dtype=np.intc) # Post search counter
-        self._lows = np.full(self._graph.length, -1, dtype=np.intc) # Used to find bridges
-        self._colour = np.full(self._graph.length, -1, dtype=np.intc) # Colour index for
-        self._art = np.full(self._graph.length, -1, dtype=np.intc)
+        self._pre = int1dim(self._graph.length, -1)  # Pre search counter
+        self._st = int1dim(self._graph.length, -1)  # Structural parent
+        self._post = int1dim(self._graph.length, self._graph.length+1) # Post search counter
+        self._lows = int1dim(self._graph.length, -1) # Used to find bridges
+        self._colour = int1dim(self._graph.length, -1) # Colour index for
+        self._art = int1dim(self._graph.length, -1)
 
         self._bridges = AdjacencyList(self._graph.length)
         self._tree_links = AdjacencyList(self._graph.length)
@@ -84,16 +85,24 @@ cdef class DFS:
         self._dfs_run = 0
         self._bipirtite = 1
 
+    def __dealloc__(self):
+        PyMem_Free(self._pre)
+        PyMem_Free(self._st)
+        PyMem_Free(self._post)
+        PyMem_Free(self._lows)
+        PyMem_Free(self._colour)
+        PyMem_Free(self._art)
+
     @property
     def diagnostics(self):
         """dict of string to lists of ints: DFS internal indexing by metric."""
         return {
-            'pre': list(self._pre),
-            'st': list(self._st),
-            'post': list(self._post),
-            'lows': list(self._lows),
-            'art' : list(self._art),
-            'colour': list(self._colour)
+            'pre': int1dim_to_list(self._graph.length, self._pre),
+            'st': int1dim_to_list(self._graph.length, self._st),
+            'post': int1dim_to_list(self._graph.length, self._post),
+            'lows': int1dim_to_list(self._graph.length, self._lows),
+            'art' : int1dim_to_list(self._graph.length, self._art),
+            'colour': int1dim_to_list(self._graph.length, self._colour)
         }
 
     @property

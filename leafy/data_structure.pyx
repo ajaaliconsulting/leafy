@@ -5,6 +5,21 @@ cimport cython
 
 PYMAXWEIGHT = MAXWEIGHT
 
+
+cdef int* int1dim(int length, int fill_val):
+    cdef int *x = <int *> PyMem_Malloc(sizeof(int)*length)
+    for i in range(length):
+        x[i] = fill_val
+    return x
+
+
+cdef list int1dim_to_list(int length, int *arr):
+    cdef list ret_list = []
+    for i in range(length):
+        ret_list.append(arr[i])
+    return ret_list
+
+
 cdef link *create_link(int v, link *prev_link, double weight):
     cdef link *x = <link *> PyMem_Malloc(sizeof(link))
     x.val = v

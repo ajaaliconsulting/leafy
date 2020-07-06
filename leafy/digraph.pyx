@@ -3,7 +3,7 @@ import numpy as np
 cimport cython
 
 from graph cimport GraphBase
-from data_structure cimport AdjacencyList
+from data_structure cimport AdjacencyList, int1dim_to_list
 from search cimport DFS as _DFS
 
 
@@ -47,7 +47,7 @@ cdef class DFS(_DFS):
     def diagnostics(self):
         """dict of string to lists of ints: DFS internal indexing by metric."""
         diag = super().diagnostics
-        diag['art'] = list(self._art)
+        diag['art'] = int1dim_to_list(self._graph.length, self._art)
         return diag
 
     @property

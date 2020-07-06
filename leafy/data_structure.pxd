@@ -1,6 +1,10 @@
 cdef extern from "constant.h":
     cdef double MAXWEIGHT
 
+cdef int* int1dim(int length, int fill_val)
+
+cdef list int1dim_to_list(int length, int *arr)
+
 cdef struct link:
     int val
     double weight
