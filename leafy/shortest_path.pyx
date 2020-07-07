@@ -1,4 +1,5 @@
 from cpython.mem cimport PyMem_Free
+cimport cython
 
 from graph cimport GraphBase
 from data_structure cimport (IndexHeapPriorityQueue, MAXWEIGHT, int1dim, double1dim,
@@ -85,6 +86,9 @@ cdef class Dijkstra:
             self._dij_run = 1
             self._run()
 
+    @cython.boundscheck(False)
+    @cython.initializedcheck(False)
+    @cython.wraparound(False)
     cdef void _run(self):
         self._wt[self._start_node] = 0.0
         cdef IndexHeapPriorityQueue pqueue = heap_queue_factory(self._wt, self._graph.length, True)
