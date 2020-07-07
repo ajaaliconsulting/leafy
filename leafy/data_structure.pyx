@@ -153,14 +153,8 @@ cdef class MemoryViewArrayIter:
         raise StopIteration
 
 
-cdef class MVAIndexIter:
-    """Memory View Array iterator returning the index of the value matches"""
-    def __cinit__(self, int [::1] mv, int length, int value):
-        self._length = length
-        self._mv_array = mv
-        self._value = value
-        self._counter = -1
-
+cdef class ArrayIndexIter:
+    """Array iterator returning the index of the value matches"""
     def __iter__(self):
         return self
 
@@ -170,9 +164,18 @@ cdef class MVAIndexIter:
     def __next__(self):
         while self._counter < self._length -1:
             self._counter += 1
-            if self._mv_array[self._counter] == self._value:
+            if self._array[self._counter] == self._value:
                 return self._counter
         raise StopIteration
+
+
+cdef ArrayIndexIter array_index_iter(int *arr, int length, int value):
+    cdef ArrayIndexIter indexiter = ArrayIndexIter.__new__(ArrayIndexIter)
+    indexiter._length = length
+    indexiter._array = arr
+    indexiter._value = value
+    indexiter._counter = -1
+    return indexiter
 
 
 cdef class Queue:
@@ -320,7 +323,7 @@ cdef class IndexHeapPriorityQueue:
         self.fix_down(self._item_position[i])
 
 
-cdef IndexHeapPriorityQueue heap_queue_factory(double *client_array, int length, bint order_asc):
+cdef IndexHeapPriorityQueue heap_queue(double *client_array, int length, bint order_asc):
     cdef IndexHeapPriorityQueue pqueue = IndexHeapPriorityQueue.__new__(IndexHeapPriorityQueue)
     pqueue._client_array = client_array
     pqueue._order_asc = order_asc
@@ -331,7 +334,5 @@ cdef IndexHeapPriorityQueue heap_queue_factory(double *client_array, int length,
         pqueue._insert(i)
     return pqueue
 
-cpdef IndexHeapPriorityQueue py_heap_queue_factory(array.array client_array,
-                                                   int length,
-                                                   bint order_asc):
-    return heap_queue_factory(client_array.data.as_doubles, length, order_asc)
+cpdef IndexHeapPriorityQueue py_heap_queue(array.array client_array, int length, bint order_asc):
+    return heap_queue(client_array.data.as_doubles, length, order_asc)

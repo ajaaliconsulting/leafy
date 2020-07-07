@@ -41,11 +41,14 @@ cdef class MemoryViewArrayIter:
     cdef int _counter
 
 
-cdef class MVAIndexIter:
-    cdef int[::1] _mv_array
+cdef class ArrayIndexIter:
+    cdef int *_array
     cdef int _length
     cdef int _counter
     cdef int _value
+
+
+cdef ArrayIndexIter array_index_iter(int *arr, int length, int value)
 
 
 cdef struct qentry:
@@ -82,5 +85,5 @@ cdef class IndexHeapPriorityQueue:
     cpdef void change(self, int k)
 
 
-cdef IndexHeapPriorityQueue heap_queue_factory(double *client_array, int length, bint order_asc)
-cpdef IndexHeapPriorityQueue py_heap_queue_factory(array.array client_array, int length, bint order_asc)
+cdef IndexHeapPriorityQueue heap_queue(double *client_array, int length, bint order_asc)
+cpdef IndexHeapPriorityQueue py_heap_queue(array.array client_array, int length, bint order_asc)

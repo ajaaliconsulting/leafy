@@ -3,7 +3,7 @@ cimport cython
 
 from graph cimport GraphBase
 from data_structure cimport (IndexHeapPriorityQueue, MAXWEIGHT, int1dim, double1dim,
-int1dim_to_list, double1dim_to_list, heap_queue_factory)
+int1dim_to_list, double1dim_to_list, heap_queue)
 
 
 cdef class Dijkstra:
@@ -91,7 +91,7 @@ cdef class Dijkstra:
     @cython.wraparound(False)
     cdef void _run(self):
         self._wt[self._start_node] = 0.0
-        cdef IndexHeapPriorityQueue pqueue = heap_queue_factory(self._wt, self._graph.length, True)
+        cdef IndexHeapPriorityQueue pqueue = heap_queue(self._wt, self._graph.length, True)
         while pqueue.empty() == False:
             v = pqueue.get_next()
             if self._wt[v] != MAXWEIGHT:
