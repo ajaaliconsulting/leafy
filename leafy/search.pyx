@@ -9,8 +9,6 @@ structure like: Cycles, Bridges, Colourability, etc. These attributes are docume
 under each algorithm.
 """
 
-cimport numpy
-import numpy as np
 from cpython.mem cimport PyMem_Free
 cimport cython
 
@@ -254,8 +252,8 @@ cdef class BFS:
         self._start_node = start_node
         self._sink_node = sink_node
 
-        self._pre = np.full(self._graph.length, -1, dtype=np.intc)  # Pre search counter
-        self._st = np.full(self._graph.length, -1, dtype=np.intc)  # Structural parent
+        self._pre = int1dim(self._graph.length, -1)  # Pre search counter
+        self._st = int1dim(self._graph.length, -1)  # Structural parent
 
         self._tree_links = AdjacencyList(self._graph.length)
         self._back_links = AdjacencyList(self._graph.length)
@@ -266,12 +264,16 @@ cdef class BFS:
         self._edge_count = 0
         self._bfs_run = 0
 
+    def __dealloc__(self):
+        PyMem_Free(self._pre)
+        PyMem_Free(self._st)
+
     @property
     def diagnostics(self):
         """dict of string to lists of ints: BFS internal indexing by metric."""
         return {
-            'pre': list(self._pre),
-            'st': list(self._st),
+            'pre': int1dim_to_list(self._graph.length, self._pre),
+            'st': int1dim_to_list(self._graph.length, self._st),
         }
 
     @property

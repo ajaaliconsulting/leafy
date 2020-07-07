@@ -30,8 +30,8 @@ cdef class BFS:
     cdef GraphBase _graph
     cdef int _start_node
     cdef int _sink_node
-    cdef int [::1] _pre
-    cdef int [::1] _st
+    cdef int *_pre
+    cdef int *_st
     cdef int _pre_counter
     cdef bint _bfs_run
     cdef int _edge_count
