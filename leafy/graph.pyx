@@ -1,11 +1,9 @@
 from cpython.mem cimport PyMem_Free
-import numpy as np
-cimport numpy as np
 cimport cython
 
 from data_structure cimport (
-    AdjacencyList, MemoryViewArrayIter, LinkedListIter, array_index_iter, MAXWEIGHT, int1dim,
-    int1dim_to_list
+    AdjacencyList, ArrayIter, LinkedListIter, array_index_iter, MAXWEIGHT, int1dim,
+    int1dim_to_list, double2dim, double2dim_to_list, array_iter
 )
 
 cdef class GraphBase:
@@ -79,12 +77,19 @@ cdef class Graph(GraphBase):
          [0, 0]]
         """
         self.dense = 1
-        self.adj_matrix = np.full((n, n), fill_value=MAXWEIGHT, dtype=np.float64)
+        self.adj_matrix = double2dim(n, n, MAXWEIGHT)
+
+    def __dealloc__(self):
+        for i in range(self.length):
+            if self.adj_matrix[i] != NULL:
+                PyMem_Free(self.adj_matrix[i])
+        if self.adj_matrix != NULL:
+            PyMem_Free(self.adj_matrix)
 
     @property
     def matrix(self):
         """Get a numpy ndarray of the graph adjacency matrix."""
-        return np.asarray(self.adj_matrix)
+        return double2dim_to_list(self.length, self.length, self.adj_matrix)
 
     cpdef void add_edge(self, int v, int w, double weight=1.0):
         """Add an edge between the vectors v and w.
@@ -111,9 +116,9 @@ cdef class Graph(GraphBase):
     @cython.boundscheck(False)
     @cython.initializedcheck(False)
     @cython.wraparound(False)
-    cpdef MemoryViewArrayIter nodeiter(self, int node):
+    cpdef ArrayIter nodeiter(self, int node):
         """ArrayIter: Iterator object over the edges of a node."""
-        return MemoryViewArrayIter(self.adj_matrix[node][:], self.length)
+        return array_iter(self.adj_matrix[node], self.length)
 
     cpdef double edge_weight(self, int v, int w):
         return self.adj_matrix[v][w]

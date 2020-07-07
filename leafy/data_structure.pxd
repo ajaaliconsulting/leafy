@@ -6,9 +6,11 @@ cdef extern from "constant.h":
 
 cdef int* int1dim(int length, int fill_val)
 cdef double* double1dim(int length, double fill_val)
+cdef double** double2dim(int length, int width, double fill_val)
 
 cdef list int1dim_to_list(int length, int *arr)
 cdef list double1dim_to_list(int length, double *arr)
+cdef list double2dim_to_list(int length, int width, double **arr)
 
 cdef struct link:
     int val
@@ -35,10 +37,14 @@ cdef class AdjacencyList:
     cpdef LinkedListIter listiter(self, int index)
 
 
-cdef class MemoryViewArrayIter:
-    cdef double [::1] _mv_array
+cdef class ArrayIter:
+    cdef double *_array
     cdef int _length
     cdef int _counter
+
+
+cdef ArrayIter array_iter(double *arr, int length)
+cpdef ArrayIter py_array_iter(array.array arr, int length)
 
 
 cdef class ArrayIndexIter:

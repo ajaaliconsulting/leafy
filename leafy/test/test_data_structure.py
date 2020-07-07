@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 
 from leafy.data_structure import (
-    Queue, AdjacencyList, PYMAXWEIGHT, MemoryViewArrayIter, py_heap_queue
+    Queue, AdjacencyList, PYMAXWEIGHT, py_heap_queue, py_array_iter,
 )
 
 
@@ -39,14 +39,9 @@ def test_linkedlistiter(simple_adj_list):
     assert [(2, 1.2), (3, 1.3)] == [i for i in simple_adj_list.listiter(1)]
 
 
-def test_memoryviewiter():
-    arr = np.array([
-        [PYMAXWEIGHT, 1.0,         PYMAXWEIGHT, PYMAXWEIGHT],
-        [PYMAXWEIGHT, PYMAXWEIGHT, 1.2,         1.3],
-        [PYMAXWEIGHT, PYMAXWEIGHT, PYMAXWEIGHT, 2.3],
-        [PYMAXWEIGHT, PYMAXWEIGHT, PYMAXWEIGHT, PYMAXWEIGHT],
-    ])
-    mv_iter = MemoryViewArrayIter(arr[1][:], 4)
+def test_arrayiter():
+    arr = array('d', [PYMAXWEIGHT, PYMAXWEIGHT, 1.2,         1.3])
+    mv_iter = py_array_iter(arr, 4)
     assert [(2, 1.2), (3, 1.3)] == [i for i in mv_iter]
 
 

@@ -1,4 +1,4 @@
-from data_structure cimport AdjacencyList, MemoryViewArrayIter, LinkedListIter, ArrayIndexIter
+from data_structure cimport AdjacencyList, ArrayIter, LinkedListIter, ArrayIndexIter
 
 cdef class GraphBase:
     cdef readonly int length
@@ -14,8 +14,8 @@ cdef class GraphBase:
 
 
 cdef class Graph(GraphBase):
-    cdef readonly double[:,::1] adj_matrix
-    cpdef MemoryViewArrayIter nodeiter(self, int node)
+    cdef double** adj_matrix
+    cpdef ArrayIter nodeiter(self, int node)
 
 
 cdef class SparseGraph(GraphBase):

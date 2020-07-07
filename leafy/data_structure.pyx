@@ -18,6 +18,16 @@ cdef double* double1dim(int length, double fill_val):
     return x
 
 
+cdef double** double2dim(int length, int width, double fill_val):
+    cdef double **x = <double **> PyMem_Malloc(sizeof(double*) * length)
+    for i in range(length):
+        x[i] = <double *> PyMem_Malloc(sizeof(double) * width)
+    for l in range(length):
+        for w in range(width):
+            x[l][w] = fill_val
+    return x
+
+
 cdef list int1dim_to_list(int length, int *arr):
     cdef list ret_list = []
     for i in range(length):
@@ -29,6 +39,14 @@ cdef list double1dim_to_list(int length, double *arr):
     cdef list ret_list = []
     for i in range(length):
         ret_list.append(arr[i])
+    return ret_list
+
+
+cdef list double2dim_to_list(int length, int width, double **arr):
+    cdef list ret_list = [[] * length]
+    for l in range(length):
+        for w in range(width):
+            ret_list[l].append(arr[l][w])
     return ret_list
 
 
@@ -133,12 +151,7 @@ cdef class LinkedListIter:
         raise StopIteration
 
 
-cdef class MemoryViewArrayIter:
-    def __cinit__(self, double [::1] mv, int length):
-        self._length = length
-        self._mv_array = mv
-        self._counter = -1
-
+cdef class ArrayIter:
     def __iter__(self):
         return self
 
@@ -148,9 +161,21 @@ cdef class MemoryViewArrayIter:
     def __next__(self):
         while self._counter < self._length -1:
             self._counter += 1
-            if self._mv_array[self._counter] < MAXWEIGHT:
-                return self._counter, self._mv_array[self._counter]
+            if self._array[self._counter] < MAXWEIGHT:
+                return self._counter, self._array[self._counter]
         raise StopIteration
+
+
+cdef ArrayIter array_iter(double *arr, int length):
+    cdef ArrayIter aiter = ArrayIter.__new__(ArrayIter)
+    aiter._length = length
+    aiter._array = arr
+    aiter._counter = -1
+    return aiter
+
+
+cpdef ArrayIter py_array_iter(array.array arr, int length):
+    return array_iter(arr.data.as_doubles, length)
 
 
 cdef class ArrayIndexIter:
