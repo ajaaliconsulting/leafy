@@ -1,7 +1,8 @@
-import numpy as np
+from cpython.mem cimport PyMem_Free
 
 from graph cimport GraphBase
-from data_structure cimport IndexHeapPriorityQueue, MAXWEIGHT
+from data_structure cimport (IndexHeapPriorityQueue, MAXWEIGHT, int1dim, double1dim,
+int1dim_to_list, double1dim_to_list, heap_queue_factory)
 
 
 cdef class Dijkstra:
@@ -46,15 +47,19 @@ cdef class Dijkstra:
         self._start_node = start_node
         self._dij_run = 0
 
-        self._st = np.full(self._graph.length, -1, dtype=np.intc)  # Shortest path parent
-        self._wt = np.full(self._graph.length, MAXWEIGHT, dtype=np.float64)  # Shortest path total wight
+        self._st = int1dim(self._graph.length, -1)  # Shortest path parent
+        self._wt = double1dim(self._graph.length, MAXWEIGHT)  # Shortest path total wight
+
+    def __dealloc__(self):
+        PyMem_Free(self._st)
+        PyMem_Free(self._wt)
 
     @property
     def diagnostics(self):
         """dict of string to lists of ints: DFS internal indexing by metric."""
         return {
-            'st': list(self._st),
-            'wt': list(self._wt)
+            'st': int1dim_to_list(self._graph.length, self._st),
+            'wt': double1dim_to_list(self._graph.length, self._wt)
         }
 
     cpdef list path(self, int sink_node):
@@ -82,7 +87,7 @@ cdef class Dijkstra:
 
     cdef void _run(self):
         self._wt[self._start_node] = 0.0
-        cdef IndexHeapPriorityQueue pqueue = IndexHeapPriorityQueue(self._wt, True)
+        cdef IndexHeapPriorityQueue pqueue = heap_queue_factory(self._wt, self._graph.length, True)
         while pqueue.empty() == False:
             v = pqueue.get_next()
             if self._wt[v] != MAXWEIGHT:

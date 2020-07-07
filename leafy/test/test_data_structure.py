@@ -2,12 +2,14 @@
 Purpose:
 *. Test data_structure.pyx
 """
+from array import array
+
 import numpy as np
 import pytest
 
 from leafy.data_structure import (
     Queue, AdjacencyList, PYMAXWEIGHT, MemoryViewArrayIter,
-    IndexHeapPriorityQueue,
+    IndexHeapPriorityQueue, py_heap_queue_factory,
 )
 
 
@@ -94,9 +96,9 @@ class TestQueue:
 
 
 def test_priority_queue_asc():
-    #                           0    1    2    3    4   5
-    weighted_list = np.array([0.6, 0.2, 0.5, 0.4, 0.3, 0.22])
-    pqueue = IndexHeapPriorityQueue(weighted_list, True)
+    #                             0    1    2    3    4   5
+    weighted_list = array('d', [0.6, 0.2, 0.5, 0.4, 0.3, 0.22])
+    pqueue = py_heap_queue_factory(weighted_list, 6, True)
     assert pqueue.empty() is False
     assert pqueue.get_next() == 1
     assert pqueue.get_next() == 5
@@ -108,8 +110,8 @@ def test_priority_queue_asc():
 
 def test_priority_queue_desc():
     #                           0    1    2    3    4   5
-    weighted_list = np.array([0.6, 0.2, 0.5, 0.4, 0.3, 0.22])
-    pqueue = IndexHeapPriorityQueue(weighted_list, False)
+    weighted_list = array('d', [0.6, 0.2, 0.5, 0.4, 0.3, 0.22])
+    pqueue = py_heap_queue_factory(weighted_list, 6, False)
     assert pqueue.empty() is False
     assert pqueue.get_next() == 0
     assert pqueue.get_next() == 2
@@ -120,8 +122,8 @@ def test_priority_queue_desc():
 
 
 def test_priority_queue_change():
-    weighted_list = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
-    pqueue = IndexHeapPriorityQueue(weighted_list, True)
+    weighted_list = array('d', [1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    pqueue = py_heap_queue_factory(weighted_list, 6, True)
     weighted_list[1] = 0.2
     pqueue.change(1)
     assert pqueue.get_next() == 1

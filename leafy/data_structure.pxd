@@ -1,9 +1,14 @@
+from cpython cimport array
+import array
+
 cdef extern from "constant.h":
     cdef double MAXWEIGHT
 
 cdef int* int1dim(int length, int fill_val)
+cdef double* double1dim(int length, double fill_val)
 
 cdef list int1dim_to_list(int length, int *arr)
+cdef list double1dim_to_list(int length, double *arr)
 
 cdef struct link:
     int val
@@ -61,9 +66,8 @@ cdef class Queue:
     cpdef bint empty(self)
 
 
-
 cdef class IndexHeapPriorityQueue:
-    cdef double[::1] _client_array
+    cdef double *_client_array
     cdef bint _order_asc
     cdef int *_index_queue
     cdef int *_item_position
@@ -77,3 +81,6 @@ cdef class IndexHeapPriorityQueue:
     cpdef int get_next(self)
     cpdef void change(self, int k)
 
+
+cdef IndexHeapPriorityQueue heap_queue_factory(double *client_array, int length, bint order_asc)
+cpdef IndexHeapPriorityQueue py_heap_queue_factory(array.array client_array, int length, bint order_asc)

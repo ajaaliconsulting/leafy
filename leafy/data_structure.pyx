@@ -11,7 +11,21 @@ cdef int* int1dim(int length, int fill_val):
     return x
 
 
+cdef double* double1dim(int length, double fill_val):
+    cdef double *x = <double *> PyMem_Malloc(sizeof(double)*length)
+    for i in range(length):
+        x[i] = fill_val
+    return x
+
+
 cdef list int1dim_to_list(int length, int *arr):
+    cdef list ret_list = []
+    for i in range(length):
+        ret_list.append(arr[i])
+    return ret_list
+
+
+cdef list double1dim_to_list(int length, double *arr):
     cdef list ret_list = []
     for i in range(length):
         ret_list.append(arr[i])
@@ -249,14 +263,11 @@ cdef class Queue:
 
 
 cdef class IndexHeapPriorityQueue:
-    def __cinit__(self, double[::1] mv_client, bint order_asc):
-        self._client_array = mv_client
-        self._order_asc = order_asc
-        self._index_queue = int1dim(len(mv_client)+1, -1)
-        self._item_position = int1dim(len(mv_client), -1)
-        self._length = 0
-        for i in range(len(self._client_array)):
-            self._insert(i)
+    def __dealloc__(self):
+        if self._index_queue is not NULL:
+            PyMem_Free(self._index_queue)
+        if self._item_position is not NULL:
+            PyMem_Free(self._item_position)
 
     cdef void _insert(self, int i):
         self._length = self._length + 1
@@ -309,3 +320,18 @@ cdef class IndexHeapPriorityQueue:
         self.fix_down(self._item_position[i])
 
 
+cdef IndexHeapPriorityQueue heap_queue_factory(double *client_array, int length, bint order_asc):
+    cdef IndexHeapPriorityQueue pqueue = IndexHeapPriorityQueue.__new__(IndexHeapPriorityQueue)
+    pqueue._client_array = client_array
+    pqueue._order_asc = order_asc
+    pqueue._index_queue = int1dim(length+1, -1)
+    pqueue._item_position = int1dim(length, -1)
+    pqueue._length = 0
+    for i in range(length):
+        pqueue._insert(i)
+    return pqueue
+
+cpdef IndexHeapPriorityQueue py_heap_queue_factory(array.array client_array,
+                                                   int length,
+                                                   bint order_asc):
+    return heap_queue_factory(client_array.data.as_doubles, length, order_asc)
