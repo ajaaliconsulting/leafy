@@ -65,8 +65,8 @@ cdef class Queue:
 cdef class IndexHeapPriorityQueue:
     cdef double[::1] _client_array
     cdef bint _order_asc
-    cdef readonly int[::1] _index_queue
-    cdef readonly int[::1] _item_position
+    cdef int *_index_queue
+    cdef int *_item_position
     cdef int _length
     cdef void _insert(self, int i)
     cdef void _exchange(self, int i, int j)

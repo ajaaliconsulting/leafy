@@ -1,5 +1,3 @@
-cimport numpy
-import numpy as np
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 cimport cython
 
@@ -254,8 +252,8 @@ cdef class IndexHeapPriorityQueue:
     def __cinit__(self, double[::1] mv_client, bint order_asc):
         self._client_array = mv_client
         self._order_asc = order_asc
-        self._index_queue = np.empty(len(mv_client)+1, dtype=np.intc)
-        self._item_position = np.empty(len(mv_client), dtype=np.intc)
+        self._index_queue = int1dim(len(mv_client)+1, -1)
+        self._item_position = int1dim(len(mv_client), -1)
         self._length = 0
         for i in range(len(self._client_array)):
             self._insert(i)

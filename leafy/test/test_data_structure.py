@@ -98,12 +98,12 @@ def test_priority_queue_asc():
     weighted_list = np.array([0.6, 0.2, 0.5, 0.4, 0.3, 0.22])
     pqueue = IndexHeapPriorityQueue(weighted_list, True)
     assert pqueue.empty() is False
-    assert pqueue.get_next() == 1, list(pqueue._index_queue[1:])
-    assert pqueue.get_next() == 5, list(pqueue._index_queue[1:])
-    assert pqueue.get_next() == 4, list(pqueue._index_queue[1:])
-    assert pqueue.get_next() == 3, list(pqueue._index_queue[1:])
-    assert pqueue.get_next() == 2, list(pqueue._index_queue[1:])
-    assert pqueue.get_next() == 0, list(pqueue._index_queue[1:])
+    assert pqueue.get_next() == 1
+    assert pqueue.get_next() == 5
+    assert pqueue.get_next() == 4
+    assert pqueue.get_next() == 3
+    assert pqueue.get_next() == 2
+    assert pqueue.get_next() == 0
 
 
 def test_priority_queue_desc():
@@ -111,12 +111,12 @@ def test_priority_queue_desc():
     weighted_list = np.array([0.6, 0.2, 0.5, 0.4, 0.3, 0.22])
     pqueue = IndexHeapPriorityQueue(weighted_list, False)
     assert pqueue.empty() is False
-    assert pqueue.get_next() == 0, list(pqueue._index_queue[1:])
-    assert pqueue.get_next() == 2, list(pqueue._index_queue[1:])
-    assert pqueue.get_next() == 3, list(pqueue._index_queue[1:])
-    assert pqueue.get_next() == 4, list(pqueue._index_queue[1:])
-    assert pqueue.get_next() == 5, list(pqueue._index_queue[1:])
-    assert pqueue.get_next() == 1, list(pqueue._index_queue[1:])
+    assert pqueue.get_next() == 0
+    assert pqueue.get_next() == 2
+    assert pqueue.get_next() == 3
+    assert pqueue.get_next() == 4
+    assert pqueue.get_next() == 5
+    assert pqueue.get_next() == 1
 
 
 def test_priority_queue_change():
