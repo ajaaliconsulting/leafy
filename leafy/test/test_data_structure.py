@@ -4,7 +4,6 @@ Purpose:
 """
 from array import array
 
-import numpy as np
 import pytest
 
 from leafy.data_structure import (
