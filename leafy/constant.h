@@ -1,1 +1,1 @@
-#define MAXWEIGHT 101.0
+#define MAXWEIGHT 1000001.0
