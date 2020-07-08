@@ -1,19 +1,13 @@
-import numpy
 from setuptools import setup, Extension
 
 DEVELOPEMENT_MODE = False
 
 EXTENSIONS = [
-    Extension('leafy.data_structure', ['leafy/data_structure.pyx'],
-              include_dirs=[numpy.get_include()]),
-    Extension('leafy.graph', ['leafy/graph.pyx'],
-              include_dirs=[numpy.get_include()]),
-    Extension('leafy.search', ['leafy/search.pyx'],
-              include_dirs=[numpy.get_include()]),
-    Extension('leafy.digraph', ['leafy/digraph.pyx'],
-              include_dirs=[numpy.get_include()]),
-    Extension('leafy.shortest_path', ['leafy/shortest_path.pyx'],
-              include_dirs=[numpy.get_include()]),
+    Extension('leafy.data_structure', ['leafy/data_structure.pyx']),
+    Extension('leafy.graph', ['leafy/graph.pyx']),
+    Extension('leafy.search', ['leafy/search.pyx']),
+    Extension('leafy.digraph', ['leafy/digraph.pyx']),
+    Extension('leafy.shortest_path', ['leafy/shortest_path.pyx']),
 ]
 
 setup_kwargs = {}
