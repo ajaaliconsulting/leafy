@@ -6,7 +6,7 @@ import pytest
 
 from leafy.graph import Graph, SparseGraph
 from leafy.search import DFS, BFS
-from leafy.test.utils import disanostics_table
+from .utils import disanostics_table
 
 
 def small_graph(graph_type):
