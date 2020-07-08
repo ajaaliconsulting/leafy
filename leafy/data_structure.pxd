@@ -1,5 +1,16 @@
+from cpython cimport array
+import array
+
 cdef extern from "constant.h":
     cdef double MAXWEIGHT
+
+cdef int* int1dim(int length, int fill_val)
+cdef double* double1dim(int length, double fill_val)
+cdef double** double2dim(int length, int width, double fill_val)
+
+cdef list int1dim_to_list(int length, int *arr)
+cdef list double1dim_to_list(int length, double *arr)
+cdef list double2dim_to_list(int length, int width, double **arr)
 
 cdef struct link:
     int val
@@ -26,17 +37,24 @@ cdef class AdjacencyList:
     cpdef LinkedListIter listiter(self, int index)
 
 
-cdef class MemoryViewArrayIter:
-    cdef double [::1] _mv_array
+cdef class ArrayIter:
+    cdef double *_array
     cdef int _length
     cdef int _counter
 
 
-cdef class MVAIndexIter:
-    cdef int[::1] _mv_array
+cdef ArrayIter array_iter(double *arr, int length)
+cpdef ArrayIter py_array_iter(array.array arr, int length)
+
+
+cdef class ArrayIndexIter:
+    cdef int *_array
     cdef int _length
     cdef int _counter
     cdef int _value
+
+
+cdef ArrayIndexIter array_index_iter(int *arr, int length, int value)
 
 
 cdef struct qentry:
@@ -57,12 +75,11 @@ cdef class Queue:
     cpdef bint empty(self)
 
 
-
 cdef class IndexHeapPriorityQueue:
-    cdef double[::1] _client_array
+    cdef double *_client_array
     cdef bint _order_asc
-    cdef readonly int[::1] _index_queue
-    cdef readonly int[::1] _item_position
+    cdef int *_index_queue
+    cdef int *_item_position
     cdef int _length
     cdef void _insert(self, int i)
     cdef void _exchange(self, int i, int j)
@@ -73,3 +90,6 @@ cdef class IndexHeapPriorityQueue:
     cpdef int get_next(self)
     cpdef void change(self, int k)
 
+
+cdef IndexHeapPriorityQueue heap_queue(double *client_array, int length, bint order_asc)
+cpdef IndexHeapPriorityQueue py_heap_queue(array.array client_array, int length, bint order_asc)

@@ -2,7 +2,7 @@ import pytest
 
 from leafy.graph import SparseGraph
 from leafy.shortest_path import Dijkstra
-from leafy.test.utils import disanostics_table
+from .utils import disanostics_table
 
 
 @pytest.fixture

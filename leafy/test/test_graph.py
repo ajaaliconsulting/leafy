@@ -4,6 +4,7 @@ Purpose:
 """
 import pytest
 
+from leafy.data_structure import PYMAXWEIGHT
 from leafy.graph import Graph, SparseGraph
 
 
@@ -61,10 +62,10 @@ def test_source_sink(small_dag):
 def test_graph_weights(small_dag):
     assert small_dag.edge_weight(0, 1) == 0.5
     assert small_dag.edge_weight(0, 2) == 1.0
-    assert small_dag.edge_weight(2, 4) == 101.0
+    assert small_dag.edge_weight(2, 4) == PYMAXWEIGHT
 
 
 def test_sparse_graph_weights(small_sparse_dag):
     assert small_sparse_dag.edge_weight(0, 1) == 0.5
     assert small_sparse_dag.edge_weight(0, 2) == 1.0
-    assert small_sparse_dag.edge_weight(2, 4) == 101.0
+    assert small_sparse_dag.edge_weight(2, 4) == PYMAXWEIGHT

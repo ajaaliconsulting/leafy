@@ -1,9 +1,9 @@
-import numpy as np
-cimport numpy as np
+from cpython.mem cimport PyMem_Free
 cimport cython
 
 from data_structure cimport (
-    AdjacencyList, MemoryViewArrayIter, LinkedListIter, MVAIndexIter, MAXWEIGHT
+    AdjacencyList, ArrayIter, LinkedListIter, array_index_iter, MAXWEIGHT, int1dim,
+    int1dim_to_list, double2dim, double2dim_to_list, array_iter
 )
 
 cdef class GraphBase:
@@ -11,8 +11,12 @@ cdef class GraphBase:
         self.length = n
         self.directed = directed
         self.edge_count = 0
-        self.in_degrees = np.zeros(n, dtype=np.intc)
-        self.out_degrees = np.zeros(n, dtype=np.intc)
+        self._in_degrees = int1dim(n, 0)
+        self._out_degrees = int1dim(n, 0)
+
+    def __dealloc__(self):
+        PyMem_Free(self._in_degrees)
+        PyMem_Free(self._out_degrees)
 
     cpdef void add_edge(self, int v, int w, double weight=1.0):
         return
@@ -27,14 +31,22 @@ cdef class GraphBase:
         """List of ints: All nodes which have an out-degree of zero."""
         return self.sinks()
 
-    cdef MVAIndexIter sources(self):
-        return MVAIndexIter(self.in_degrees, self.length, 0)
+    cdef ArrayIndexIter sources(self):
+        return array_index_iter(self._in_degrees, self.length, 0)
 
-    cdef MVAIndexIter sinks(self):
-        return MVAIndexIter(self.out_degrees, self.length, 0)
+    cdef ArrayIndexIter sinks(self):
+        return array_index_iter(self._out_degrees, self.length, 0)
 
     cpdef double edge_weight(self, int v, int w):
         return 0.0
+
+    @property
+    def in_degrees(self):
+        return int1dim_to_list(self.length, self._in_degrees)
+
+    @property
+    def out_degrees(self):
+        return int1dim_to_list(self.length, self._out_degrees)
 
 
 cdef class Graph(GraphBase):
@@ -65,12 +77,19 @@ cdef class Graph(GraphBase):
          [0, 0]]
         """
         self.dense = 1
-        self.adj_matrix = np.full((n, n), fill_value=MAXWEIGHT, dtype=np.float64)
+        self.adj_matrix = double2dim(n, n, MAXWEIGHT)
+
+    def __dealloc__(self):
+        for i in range(self.length):
+            if self.adj_matrix[i] != NULL:
+                PyMem_Free(self.adj_matrix[i])
+        if self.adj_matrix != NULL:
+            PyMem_Free(self.adj_matrix)
 
     @property
     def matrix(self):
         """Get a numpy ndarray of the graph adjacency matrix."""
-        return np.asarray(self.adj_matrix)
+        return double2dim_to_list(self.length, self.length, self.adj_matrix)
 
     cpdef void add_edge(self, int v, int w, double weight=1.0):
         """Add an edge between the vectors v and w.
@@ -85,21 +104,21 @@ cdef class Graph(GraphBase):
             The weight associated to the added edge, defaults to 1.
         """
         self.edge_count += 1
-        self.out_degrees[v] +=1
-        self.in_degrees[w] +=1
+        self._out_degrees[v] +=1
+        self._in_degrees[w] +=1
         self.adj_matrix[v][w] = weight
         if not self.directed:
             self.edge_count += 1
-            self.out_degrees[w] +=1
-            self.in_degrees[v] +=1
+            self._out_degrees[w] +=1
+            self._in_degrees[v] +=1
             self.adj_matrix[w][v] = weight
 
     @cython.boundscheck(False)
     @cython.initializedcheck(False)
     @cython.wraparound(False)
-    cpdef MemoryViewArrayIter nodeiter(self, int node):
+    cpdef ArrayIter nodeiter(self, int node):
         """ArrayIter: Iterator object over the edges of a node."""
-        return MemoryViewArrayIter(self.adj_matrix[node][:], self.length)
+        return array_iter(self.adj_matrix[node], self.length)
 
     cpdef double edge_weight(self, int v, int w):
         return self.adj_matrix[v][w]
@@ -155,13 +174,13 @@ cdef class SparseGraph(GraphBase):
             The weight associated to the added edge, defaults to 1.            
         """
         self.edge_count += 1
-        self.out_degrees[v] +=1
-        self.in_degrees[w] +=1
+        self._out_degrees[v] +=1
+        self._in_degrees[w] +=1
         self.adj_list.append(v, w, weight)
         if not self.directed:
             self.edge_count += 1
-            self.out_degrees[w] +=1
-            self.in_degrees[v] +=1
+            self._out_degrees[w] +=1
+            self._in_degrees[v] +=1
             self.adj_list.append(w, v, weight)
 
     cpdef LinkedListIter nodeiter(self, int node):

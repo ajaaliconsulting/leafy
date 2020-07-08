@@ -5,12 +5,12 @@ cdef class DFS:
     cdef GraphBase _graph
     cdef int _start_node
     cdef int _sink_node
-    cdef int [::1] _pre
-    cdef int [::1] _st
-    cdef int [::1] _post
-    cdef int [::1] _lows
-    cdef int [::1] _colour
-    cdef int [::1] _art
+    cdef int *_pre
+    cdef int *_st
+    cdef int *_post
+    cdef int *_lows
+    cdef int *_colour
+    cdef int *_art
     cdef int _pre_counter
     cdef int _post_counter
     cdef int _edge_count
@@ -30,8 +30,8 @@ cdef class BFS:
     cdef GraphBase _graph
     cdef int _start_node
     cdef int _sink_node
-    cdef int [::1] _pre
-    cdef int [::1] _st
+    cdef int *_pre
+    cdef int *_st
     cdef int _pre_counter
     cdef bint _bfs_run
     cdef int _edge_count

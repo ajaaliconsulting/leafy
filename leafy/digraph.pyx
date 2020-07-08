@@ -1,9 +1,8 @@
-cimport numpy
-import numpy as np
+from cpython.mem cimport PyMem_Free
 cimport cython
 
 from graph cimport GraphBase
-from data_structure cimport AdjacencyList
+from data_structure cimport AdjacencyList, int1dim_to_list, int1dim
 from search cimport DFS as _DFS
 
 
@@ -39,15 +38,19 @@ cdef class DFS(_DFS):
     """
 
     def __cinit__(self, GraphBase graph not None, int start_node, int sink_node=-1):
-        self._rts = np.full(self._graph.length, -1, dtype=np.intc) # Reverse topological sort
-        self._cycle = np.full(self._graph.length, -1, dtype=np.intc)
+        self._rts = int1dim(self._graph.length, -1) # Reverse topological sort
+        self._cycle = int1dim(self._graph.length, -1)
         self._cross_links = AdjacencyList(self._graph.length)
+
+    def __dealloc__(self):
+        PyMem_Free(self._rts)
+        PyMem_Free(self._cycle)
 
     @property
     def diagnostics(self):
         """dict of string to lists of ints: DFS internal indexing by metric."""
         diag = super().diagnostics
-        diag['art'] = list(self._art)
+        diag['art'] = int1dim_to_list(self._graph.length, self._art)
         return diag
 
     @property
@@ -94,10 +97,10 @@ cdef class DFS(_DFS):
             The node indices reverse topologically sorted.
         """
         assert self._dfs_run != 0, "Run the DFS before calling results."
-        for i in self._rts:
-            if i == -1:
+        for i in range(self._graph.length):
+            if self._rts[i] == -1:
                 continue
-            yield i
+            yield self._rts[i]
 
     @cython.boundscheck(False)
     @cython.initializedcheck(False)

@@ -1,9 +1,54 @@
-cimport numpy
-import numpy as np
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 cimport cython
 
 PYMAXWEIGHT = MAXWEIGHT
+
+
+cdef int* int1dim(int length, int fill_val):
+    cdef int *x = <int *> PyMem_Malloc(sizeof(int)*length)
+    for i in range(length):
+        x[i] = fill_val
+    return x
+
+
+cdef double* double1dim(int length, double fill_val):
+    cdef double *x = <double *> PyMem_Malloc(sizeof(double)*length)
+    for i in range(length):
+        x[i] = fill_val
+    return x
+
+
+cdef double** double2dim(int length, int width, double fill_val):
+    cdef double **x = <double **> PyMem_Malloc(sizeof(double*) * length)
+    for i in range(length):
+        x[i] = <double *> PyMem_Malloc(sizeof(double) * width)
+    for l in range(length):
+        for w in range(width):
+            x[l][w] = fill_val
+    return x
+
+
+cdef list int1dim_to_list(int length, int *arr):
+    cdef list ret_list = []
+    for i in range(length):
+        ret_list.append(arr[i])
+    return ret_list
+
+
+cdef list double1dim_to_list(int length, double *arr):
+    cdef list ret_list = []
+    for i in range(length):
+        ret_list.append(arr[i])
+    return ret_list
+
+
+cdef list double2dim_to_list(int length, int width, double **arr):
+    cdef list ret_list = [[] * length]
+    for l in range(length):
+        for w in range(width):
+            ret_list[l].append(arr[l][w])
+    return ret_list
+
 
 cdef link *create_link(int v, link *prev_link, double weight):
     cdef link *x = <link *> PyMem_Malloc(sizeof(link))
@@ -106,12 +151,7 @@ cdef class LinkedListIter:
         raise StopIteration
 
 
-cdef class MemoryViewArrayIter:
-    def __cinit__(self, double [::1] mv, int length):
-        self._length = length
-        self._mv_array = mv
-        self._counter = -1
-
+cdef class ArrayIter:
     def __iter__(self):
         return self
 
@@ -121,19 +161,25 @@ cdef class MemoryViewArrayIter:
     def __next__(self):
         while self._counter < self._length -1:
             self._counter += 1
-            if self._mv_array[self._counter] < MAXWEIGHT:
-                return self._counter, self._mv_array[self._counter]
+            if self._array[self._counter] < MAXWEIGHT:
+                return self._counter, self._array[self._counter]
         raise StopIteration
 
 
-cdef class MVAIndexIter:
-    """Memory View Array iterator returning the index of the value matches"""
-    def __cinit__(self, int [::1] mv, int length, int value):
-        self._length = length
-        self._mv_array = mv
-        self._value = value
-        self._counter = -1
+cdef ArrayIter array_iter(double *arr, int length):
+    cdef ArrayIter aiter = ArrayIter.__new__(ArrayIter)
+    aiter._length = length
+    aiter._array = arr
+    aiter._counter = -1
+    return aiter
 
+
+cpdef ArrayIter py_array_iter(array.array arr, int length):
+    return array_iter(arr.data.as_doubles, length)
+
+
+cdef class ArrayIndexIter:
+    """Array iterator returning the index of the value matches"""
     def __iter__(self):
         return self
 
@@ -143,9 +189,18 @@ cdef class MVAIndexIter:
     def __next__(self):
         while self._counter < self._length -1:
             self._counter += 1
-            if self._mv_array[self._counter] == self._value:
+            if self._array[self._counter] == self._value:
                 return self._counter
         raise StopIteration
+
+
+cdef ArrayIndexIter array_index_iter(int *arr, int length, int value):
+    cdef ArrayIndexIter indexiter = ArrayIndexIter.__new__(ArrayIndexIter)
+    indexiter._length = length
+    indexiter._array = arr
+    indexiter._value = value
+    indexiter._counter = -1
+    return indexiter
 
 
 cdef class Queue:
@@ -236,14 +291,11 @@ cdef class Queue:
 
 
 cdef class IndexHeapPriorityQueue:
-    def __cinit__(self, double[::1] mv_client, bint order_asc):
-        self._client_array = mv_client
-        self._order_asc = order_asc
-        self._index_queue = np.empty(len(mv_client)+1, dtype=np.intc)
-        self._item_position = np.empty(len(mv_client), dtype=np.intc)
-        self._length = 0
-        for i in range(len(self._client_array)):
-            self._insert(i)
+    def __dealloc__(self):
+        if self._index_queue is not NULL:
+            PyMem_Free(self._index_queue)
+        if self._item_position is not NULL:
+            PyMem_Free(self._item_position)
 
     cdef void _insert(self, int i):
         self._length = self._length + 1
@@ -296,3 +348,16 @@ cdef class IndexHeapPriorityQueue:
         self.fix_down(self._item_position[i])
 
 
+cdef IndexHeapPriorityQueue heap_queue(double *client_array, int length, bint order_asc):
+    cdef IndexHeapPriorityQueue pqueue = IndexHeapPriorityQueue.__new__(IndexHeapPriorityQueue)
+    pqueue._client_array = client_array
+    pqueue._order_asc = order_asc
+    pqueue._index_queue = int1dim(length+1, -1)
+    pqueue._item_position = int1dim(length, -1)
+    pqueue._length = 0
+    for i in range(length):
+        pqueue._insert(i)
+    return pqueue
+
+cpdef IndexHeapPriorityQueue py_heap_queue(array.array client_array, int length, bint order_asc):
+    return heap_queue(client_array.data.as_doubles, length, order_asc)
