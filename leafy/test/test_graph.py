@@ -54,6 +54,13 @@ def small_sparse_dag():
     return dag
 
 
+def test_graph_as_matrix():
+    g = Graph(2)
+    g.add_edge(0, 0)
+    g.add_edge(1, 1)
+    assert g.matrix == [[1.0, PYMAXWEIGHT], [PYMAXWEIGHT, 1.0]]
+
+
 def test_source_sink(small_dag):
     assert list(small_dag.sources) == [0, 8]
     assert list(small_dag.sinks) == [1, 5, 10, 12]
