@@ -43,7 +43,7 @@ cdef list double1dim_to_list(int length, double *arr):
 
 
 cdef list double2dim_to_list(int length, int width, double **arr):
-    cdef list ret_list = [[] * length]
+    cdef list ret_list = [[] for l in range(length)]
     for l in range(length):
         for w in range(width):
             ret_list[l].append(arr[l][w])
