@@ -88,6 +88,8 @@ cdef class AdjacencyList:
                 next_al = al.next
                 PyMem_Free(al)
                 al = next_al
+        PyMem_Free(self._start)
+        PyMem_Free(self._end)
 
     cpdef void append(self, int index, int value, double weight=0.0):
         assert 0 <= index < self._array_length
