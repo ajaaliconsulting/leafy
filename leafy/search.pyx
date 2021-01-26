@@ -20,7 +20,7 @@ cdef class DFS:
 
     Run a depth first search on a graph recording its structural attributes. By running DFS
     we can find out:
-    - Tree links: These are edges from nodes to other unvisited nodes.
+    - Tree links: These are edges from nodes to other visited nodes.
     - Back links: These are edges from nodes to visited ancentors.
     - Down links: These are edges from nodes to visited decendents.
     - Parent Links: These are edges from nodes back to their parents.

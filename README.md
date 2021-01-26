@@ -13,15 +13,16 @@ graph, and if the graph is directed. Graphs defualt to undirected.
 
 ```python
 >>> from leafy.graph import Graph
+>>> from pprint import pprint
 >>> g = Graph(4)
 >>> g.add_edge(0, 1)
 >>> g.add_edge(2, 3)
 >>> g.add_edge(2, 1)
->>> g.matrix
-array([[0, 1, 0, 0],
-       [1, 0, 1, 0],
-       [0, 1, 0, 1],
-       [0, 0, 1, 0]], dtype=int32)
+>>> pprint(g.matrix)
+[[1000001.0, 1.0, 1000001.0, 1000001.0],
+ [1.0, 1000001.0, 1.0, 1000001.0],
+ [1000001.0, 1.0, 1000001.0, 1.0],
+ [1000001.0, 1000001.0, 1.0, 1000001.0]]
 ```
 
 the same edges can be defined as a directed `SparseGraph`
