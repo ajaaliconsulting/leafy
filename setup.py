@@ -23,7 +23,7 @@ def readme():
 
 setup(
     name='leafy',
-    version='0.1.2',
+    version='0.1.3',
     description='Another fast graph algorithms library',
     long_description=readme(),
     long_description_content_type='text/markdown',
