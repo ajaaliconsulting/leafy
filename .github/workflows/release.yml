@@ -10,14 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["37", "38"]
+        python-version: ["cp37-cp37m", "cp38-cp38", "cp39-cp39"]
     container: quay.io/pypa/manylinux2014_x86_64
     steps:
       - uses: actions/checkout@v3
       - name: Build binary wheel ${{ matrix.python-version }}
         run: |
-          /opt/python/cp${{ matrix.python-version }}-cp${{ matrix.python-version }}/bin/python -m pip install -r build_requirements.txt
-          /opt/python/cp${{ matrix.python-version }}-cp${{ matrix.python-version }}/bin/python setup.py bdist_wheel
+          /opt/python/${{ matrix.python-version }}/bin/python -m pip install -r build_requirements.txt
+          /opt/python/${{ matrix.python-version }}/bin/python setup.py bdist_wheel
 
       - name: Archive dist artifacts
         uses: actions/upload-artifact@v2
@@ -29,7 +29,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: ["3.8"]
+        python-version: ["3.7", "3.8", "3.9"]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }} x64
@@ -53,7 +53,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: ["3.8"]
+        python-version: ["3.7", "3.8", "3.9"]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }} x64
@@ -81,7 +81,7 @@ jobs:
       - name: Stage linux 3.8
         uses: actions/download-artifact@v2
         with:
-          name: dist-linux-3.8
+          name: dist-linux-38
 
       - name: Stage macos 3.8
         uses: actions/download-artifact@v2
