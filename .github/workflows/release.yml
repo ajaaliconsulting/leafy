@@ -17,12 +17,6 @@ jobs:
           /opt/python/cp38-cp38/bin/python -m pip install -r build_requirements.txt
           /opt/python/cp38-cp38/bin/python setup.py bdist_wheel
 
-      - uses: actions/checkout@v3
-      - name: Build binary wheel 3.7
-        run: |
-          /opt/python/cp37-cp37/bin/python -m pip install -r build_requirements.txt
-          /opt/python/cp37-cp37/bin/python setup.py bdist_wheel
-
       - name: Archive dist artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -86,16 +80,16 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist-linux-3.8
-      - run: mv -v dist-linux-3.8/* dist/
+      - run: ls dist-linux-3.8
 
       - name: Stage macos 3.8
         uses: actions/download-artifact@v2
         with:
           name: dist-macos-3.8
-      - run: mv -v dist-macos-3.8/* dist/
+      - run: ls dist-macos-3.8
 
       - name: Stage windows 3.8
         uses: actions/download-artifact@v2
         with:
           name: dist-windows-3.8
-      - run: mv -v dist-windows-3.8/* dist/
+      - run: ls dist-windows-3.8
