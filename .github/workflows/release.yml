@@ -96,6 +96,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist-windows-3.8
-        run: |
+      - run: |
           ls 
           node dist-windows-3.8.zip
