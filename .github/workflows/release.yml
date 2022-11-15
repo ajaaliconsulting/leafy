@@ -6,6 +6,8 @@ name: Release Python Package
 on:
   release:
     types: [created]
+  workflow_dispatch:
+
 
 jobs:
   build:
