@@ -74,7 +74,7 @@ jobs:
           path: dist
 
   notify:
-    needs: [build-linux-cp38, build-macos, build-windows]
+    needs: [build-linux, build-macos, build-windows]
     runs-on: ubuntu-latest
 
     steps:
