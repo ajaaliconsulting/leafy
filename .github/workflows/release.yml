@@ -73,7 +73,7 @@ jobs:
 
   notify:
     needs: [build-linux-cp38, build-macos, build-windows]
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: creating dist folder
@@ -83,14 +83,14 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist-linux-3.8
-      - run: unzip dist-linux-3.8.zip
+      - run: unzip dist-linux-3.8.zip -d dist/
       - run: ls dist/
 
       - name: Stage macos 3.8
         uses: actions/download-artifact@v2
         with:
           name: dist-macos-3.8
-      - run: unzip dist-macos-3.8.zip
+      - run: unzip dist-macos-3.8.zip -d dist/
       - run: ls dist/
 
       - name: Stage windows 3.8
