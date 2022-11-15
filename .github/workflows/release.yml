@@ -1,0 +1,61 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Release Python Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: ls directory
+        run: |
+          pwd
+          ls
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: Gr1N/setup-poetry@v7
+      - run: poetry --version
+      - name: Install dependencies
+        run: |
+          poetry install
+      - name: "Configure AWS Credentials"
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: eu-west-2
+          mask-aws-account-id: true
+      - name: publish package
+        run: |
+          # from refs/tags/v1.2.3 get 1.2.3
+          poetry version $(echo $GITHUB_REF | sed 's#.*/v##')
+          poetry config repositories.codeartifact \
+            `aws codeartifact get-repository-endpoint \
+              --domain ajaali \
+              --domain-owner ${{ secrets.AWS_ACCOUNT_ID }} \
+              --repository pypi-store  \
+              --region eu-west-2  \
+              --format pypi  \
+              --query repositoryEndpoint \
+              --output text`
+          poetry config http-basic.codeartifact \
+            aws \
+            `aws codeartifact get-authorization-token \
+              --domain ajaali  \
+              --domain-owner ${{ secrets.AWS_ACCOUNT_ID }} \
+              --region eu-west-2  \
+              --query authorizationToken \
+              --output text`
+          poetry publish --build --repository codeartifact
