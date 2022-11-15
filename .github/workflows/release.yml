@@ -13,21 +13,21 @@ jobs:
       matrix:
         python-version: ["3.7"]
     steps:
+      - uses: actions/checkout@v3
+#      - name: Build binary wheel
+#        run: /opt/python/cp38-cp38/bin/python setup.py bdist_wheel
+#
+#      - name: Apply auditwheel for manylinux wheel
+#        run: auditwheel repair -w dist dist/*
+#
+#      - name: Remove linux wheel
+#        run: rm dist/*-linux_x86_64.whl
 
-      - name: Build binary wheel
-        run: /opt/python/cp38-cp38/bin/python setup.py bdist_wheel
-
-      - name: Apply auditwheel for manylinux wheel
-        run: auditwheel repair -w dist dist/*
-
-      - name: Remove linux wheel
-        run: rm dist/*-linux_x86_64.whl
-
-      - name: Archive dist artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: dist-${{ matrix.python-version }}
-          path: dist
+#      - name: Archive dist artifacts
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: dist-${{ matrix.python-version }}
+#          path: dist
 
       - uses: actions/setup-python@v3
       - name: Running setup.py
