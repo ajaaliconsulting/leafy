@@ -6,21 +6,23 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-linux-cp38:
+  build-linux:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["37", "38"]
     container: quay.io/pypa/manylinux2014_x86_64
     steps:
-
       - uses: actions/checkout@v3
-      - name: Build binary wheel 3.8
+      - name: Build binary wheel ${{ matrix.python-version }}
         run: |
-          /opt/python/cp38-cp38/bin/python -m pip install -r build_requirements.txt
-          /opt/python/cp38-cp38/bin/python setup.py bdist_wheel
+          /opt/python/cp${{ matrix.python-version }}-cp${{ matrix.python-version }}/bin/python -m pip install -r build_requirements.txt
+          /opt/python/cp${{ matrix.python-version }}-cp${{ matrix.python-version }}/bin/python setup.py bdist_wheel
 
       - name: Archive dist artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: dist-linux-3.8
+          name: dist-linux-${{ matrix.python-version }}
           path: dist
 
   build-macos:
