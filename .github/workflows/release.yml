@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-linux:
+  build-linux-cp38:
     runs-on: ubuntu-latest
     container: quay.io/pypa/manylinux2014_x86_64
     steps:
@@ -72,7 +72,7 @@ jobs:
           path: dist
 
   notify:
-    needs: [build-linux, build-macos, build-windows]
+    needs: [build-linux-cp38, build-macos, build-windows]
     runs-on: ubuntu-latest
 
     steps:
@@ -80,16 +80,22 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist-linux-3.8
-      - run: ls dist-linux-3.8.zip
+      - run: |
+          ls 
+          node dist-linux-3.8.zip
 
       - name: Stage macos 3.8
         uses: actions/download-artifact@v2
         with:
           name: dist-macos-3.8
-      - run: ls dist-macos-3.8.zip
+      - run: |
+          ls 
+          node dist-macos-3.8.zip
 
       - name: Stage windows 3.8
         uses: actions/download-artifact@v2
         with:
           name: dist-windows-3.8
-      - run: ls dist-windows-3.8.zip
+        run: |
+          ls 
+          node dist-windows-3.8.zip
