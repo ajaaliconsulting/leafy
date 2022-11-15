@@ -5,7 +5,7 @@ name: Release Python Package
 
 on:
   release:
-    types: [created]
+    types: [push]
 
 jobs:
   build:
