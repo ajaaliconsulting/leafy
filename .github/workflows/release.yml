@@ -73,25 +73,49 @@ jobs:
           name: dist-windows-${{ matrix.python-version }}
           path: dist
 
-  notify:
+  publish-pypi:
     needs: [build-linux, build-macos, build-windows]
     runs-on: ubuntu-latest
 
     steps:
+      - name: Stage linux 3.7
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-linux-cp37-cp37m
       - name: Stage linux 3.8
         uses: actions/download-artifact@v2
         with:
-          name: dist-linux-38
+          name: dist-linux-cp38-cp38
+      - name: Stage linux 3.9
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-linux-cp39-cp39
 
+      - name: Stage macos 3.7
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-macos-3.7
       - name: Stage macos 3.8
         uses: actions/download-artifact@v2
         with:
           name: dist-macos-3.8
+      - name: Stage macos 3.9
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-macos-3.9
 #
+      - name: Stage windows 3.7
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-windows-3.7
       - name: Stage windows 3.8
         uses: actions/download-artifact@v2
         with:
           name: dist-windows-3.8
+      - name: Stage windows 3.9
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-windows-3.9
 
       - name: List files
         run: |
