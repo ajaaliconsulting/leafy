@@ -23,81 +23,74 @@ jobs:
           name: dist-linux-3.8
           path: dist
 
-#  build-macos:
-#    runs-on: macos-latest
-#    strategy:
-#      matrix:
-#        python-version: ["3.8"]
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Set up Python ${{ matrix.python-version }} x64
-#        uses: actions/setup-python@v3
-#        with:
-#          python-version: ${{ matrix.python-version }}
-#          architecture: x64
-#
-#      - name: build package
-#        run: |
-#          python -m pip install -r build_requirements.txt
-#          python setup.py bdist_wheel
-#
-#      - name: Archive dist artifacts
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: dist-macos-${{ matrix.python-version }}
-#          path: dist
-#
-#  build-windows:
-#    runs-on: windows-latest
-#    strategy:
-#      matrix:
-#        python-version: ["3.8"]
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Set up Python ${{ matrix.python-version }} x64
-#        uses: actions/setup-python@v3
-#        with:
-#          python-version: ${{ matrix.python-version }}
-#          architecture: x64
-#
-#      - name: build package
-#        run: |
-#          python -m pip install -r build_requirements.txt
-#          python setup.py bdist_wheel
-#
-#      - name: Archive dist artifacts
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: dist-windows-${{ matrix.python-version }}
-#          path: dist
+  build-macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: ["3.8"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }} x64
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+
+      - name: build package
+        run: |
+          python -m pip install -r build_requirements.txt
+          python setup.py bdist_wheel
+
+      - name: Archive dist artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist-macos-${{ matrix.python-version }}
+          path: dist
+
+  build-windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ["3.8"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }} x64
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+
+      - name: build package
+        run: |
+          python -m pip install -r build_requirements.txt
+          python setup.py bdist_wheel
+
+      - name: Archive dist artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist-windows-${{ matrix.python-version }}
+          path: dist
 
   notify:
-#    needs: [build-linux-cp38, build-macos, build-windows]
-    needs: [build-linux-cp38]
+    needs: [build-linux-cp38, build-macos, build-windows]
     runs-on: ubuntu-latest
 
     steps:
-      - name: creating dist folder
-        run: mkdir dist
-
       - name: Stage linux 3.8
         uses: actions/download-artifact@v2
         with:
           name: dist-linux-3.8
-      - run: ls
-#      - run: unzip dist-linux-3.8.zip -d dist/
-#      - run: ls dist/
 
-#      - name: Stage macos 3.8
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: dist-macos-3.8
-#      - run: unzip dist-macos-3.8.zip -d dist/
-#      - run: ls dist/
+      - name: Stage macos 3.8
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-macos-3.8
 #
-#      - name: Stage windows 3.8
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: dist-windows-3.8
-#      - run: unzip dist-windows-3.8.zip -d dist/
-#      - run: ls dist/
+      - name: Stage windows 3.8
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-windows-3.8
+
+      - name: List files
+        run: |
+          ls
