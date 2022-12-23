@@ -103,7 +103,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist-macos-3.9
-#
       - name: Stage windows 3.7
         uses: actions/download-artifact@v2
         with:
@@ -117,6 +116,8 @@ jobs:
         with:
           name: dist-windows-3.9
 
-      - name: List files
-        run: |
-          ls
+      - name: Publish a Python distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages_dir: .
