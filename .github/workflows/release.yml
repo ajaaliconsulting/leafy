@@ -11,13 +11,14 @@ jobs:
     strategy:
       matrix:
         python-version: ["cp37-cp37m", "cp38-cp38", "cp39-cp39"]
-    container: quay.io/pypa/manylinux2014_x86_64
+    container: quay.io/pypa/manylinux_2_28_x86_64
     steps:
       - uses: actions/checkout@v3
       - name: Build binary wheel ${{ matrix.python-version }}
         run: |
           /opt/python/${{ matrix.python-version }}/bin/python -m pip install -r build_requirements.txt
-          /opt/python/${{ matrix.python-version }}/bin/python setup.py bdist_wheel
+          /opt/python/${{ matrix.python-version }}/bin/python -m pip wheel . -w wheelhouse/
+          auditwheel repair wheelhouse/leafy*.whl -w dist/
 
       - name: Archive dist artifacts
         uses: actions/upload-artifact@v2
