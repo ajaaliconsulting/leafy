@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["cp37-cp37m", "cp38-cp38", "cp39-cp39", "cp310-cp310", "cp311-cp311"]
+        python-version: ["cp37-cp37m", "cp38-cp38", "cp39-cp39"]
     container: quay.io/pypa/manylinux_2_28_x86_64
     steps:
       - uses: actions/checkout@v3
@@ -91,14 +91,6 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist-linux-cp39-cp39
-      - name: Stage linux 3.10
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-linux-cp310-cp310
-      - name: Stage linux 3.11
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-linux-cp311-cp311
 
       - name: Stage macos 3.7
         uses: actions/download-artifact@v2
