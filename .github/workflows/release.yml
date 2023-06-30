@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["cp37-cp37m", "cp38-cp38", "cp39-cp39"]
+        python-version: ["cp37-cp37m", "cp38-cp38", "cp39-cp39", "cp310-cp310", "cp311-cp311"]
     container: quay.io/pypa/manylinux_2_28_x86_64
     steps:
       - uses: actions/checkout@v3
@@ -30,7 +30,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }} x64
@@ -54,7 +54,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }} x64
@@ -91,6 +91,14 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist-linux-cp39-cp39
+      - name: Stage linux 3.10
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-linux-cp310-cp310
+      - name: Stage linux 3.11
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-linux-cp311-cp311
 
       - name: Stage macos 3.7
         uses: actions/download-artifact@v2
@@ -104,6 +112,15 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist-macos-3.9
+      - name: Stage macos 3.10
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-macos-3.10
+      - name: Stage macos 3.11
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-macos-3.11
+
       - name: Stage windows 3.7
         uses: actions/download-artifact@v2
         with:
@@ -116,6 +133,14 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist-windows-3.9
+      - name: Stage windows 3.10
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-windows-3.10
+      - name: Stage windows 3.11
+        uses: actions/download-artifact@v2
+        with:
+          name: dist-windows-3.11
 
       - name: Publish a Python distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
