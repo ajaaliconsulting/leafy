@@ -1,7 +1,7 @@
 from cpython.mem cimport PyMem_Free
 cimport cython
 
-from data_structure cimport (
+from .data_structure cimport (
     AdjacencyList, ArrayIter, LinkedListIter, array_index_iter, MAXWEIGHT, int1dim,
     int1dim_to_list, double2dim, double2dim_to_list, array_iter
 )
@@ -93,7 +93,7 @@ cdef class Graph(GraphBase):
 
     cpdef void add_edge(self, int v, int w, double weight=1.0):
         """Add an edge between the vectors v and w.
-        
+
         Parameters
         ----------
         v : int
@@ -163,7 +163,7 @@ cdef class SparseGraph(GraphBase):
 
     cpdef void add_edge(self, int v, int w, double weight=1.0):
         """Add an edge between the vectors v and w.
-        
+
         Parameters
         ----------
         v : int
@@ -171,7 +171,7 @@ cdef class SparseGraph(GraphBase):
         w : int
             index of vector w
         weight: float
-            The weight associated to the added edge, defaults to 1.            
+            The weight associated to the added edge, defaults to 1.
         """
         self.edge_count += 1
         self._out_degrees[v] +=1

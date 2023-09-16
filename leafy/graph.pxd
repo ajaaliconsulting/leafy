@@ -1,4 +1,4 @@
-from data_structure cimport AdjacencyList, ArrayIter, LinkedListIter, ArrayIndexIter
+from .data_structure cimport AdjacencyList, ArrayIter, LinkedListIter, ArrayIndexIter
 
 cdef class GraphBase:
     cdef readonly int length

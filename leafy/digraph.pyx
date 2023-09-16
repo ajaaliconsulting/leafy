@@ -1,9 +1,9 @@
 from cpython.mem cimport PyMem_Free
 cimport cython
 
-from graph cimport GraphBase
-from data_structure cimport AdjacencyList, int1dim_to_list, int1dim
-from search cimport DFS as _DFS
+from .graph cimport GraphBase
+from .data_structure cimport AdjacencyList, int1dim_to_list, int1dim
+from .search cimport DFS as _DFS
 
 
 cdef class DFS(_DFS):

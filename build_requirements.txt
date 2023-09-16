@@ -1,4 +1,4 @@
 pip
 setuptools
 wheel
-cython==0.29.35
+cython==3.0.2

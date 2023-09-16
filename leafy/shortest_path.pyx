@@ -1,8 +1,8 @@
 from cpython.mem cimport PyMem_Free
 cimport cython
 
-from graph cimport GraphBase
-from data_structure cimport (IndexHeapPriorityQueue, MAXWEIGHT, int1dim, double1dim,
+from .graph cimport GraphBase
+from .data_structure cimport (IndexHeapPriorityQueue, MAXWEIGHT, int1dim, double1dim,
 int1dim_to_list, double1dim_to_list, heap_queue)
 
 

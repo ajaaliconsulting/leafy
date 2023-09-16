@@ -299,7 +299,7 @@ cdef class IndexHeapPriorityQueue:
         if self._item_position is not NULL:
             PyMem_Free(self._item_position)
 
-    cdef void _insert(self, int i):
+    cdef void insert(self, int i):
         self._length = self._length + 1
         self._index_queue[self._length] = i
         self._item_position[i] = self._length
@@ -320,9 +320,9 @@ cdef class IndexHeapPriorityQueue:
         return self._client_array[self._index_queue[i]] < self._client_array[self._index_queue[j]]
 
     cdef void fix_up(self, int k):
-        while k > 1 and self._compare(k/2, k):
-            self._exchange(k, k/2)
-            k = k/2
+        while k > 1 and self._compare(int(k/2), k):
+            self._exchange(k, int(k/2))
+            k = int(k/2)
 
     cdef void fix_down(self, int k):
         cdef int j
@@ -358,7 +358,7 @@ cdef IndexHeapPriorityQueue heap_queue(double *client_array, int length, bint or
     pqueue._item_position = int1dim(length, -1)
     pqueue._length = 0
     for i in range(length):
-        pqueue._insert(i)
+        pqueue.insert(i)
     return pqueue
 
 cpdef IndexHeapPriorityQueue py_heap_queue(array.array client_array, int length, bint order_asc):

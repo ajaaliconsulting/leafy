@@ -12,8 +12,8 @@ under each algorithm.
 from cpython.mem cimport PyMem_Free
 cimport cython
 
-from graph cimport GraphBase
-from data_structure cimport AdjacencyList, Queue, int1dim, int1dim_to_list
+from .graph cimport GraphBase
+from .data_structure cimport AdjacencyList, Queue, int1dim, int1dim_to_list
 
 cdef class DFS:
     """Depth First Search of a graph starting from a defined node.
