@@ -13,7 +13,11 @@ EXTENSIONS = [
 setup_kwargs = {}
 if DEVELOPEMENT_MODE:
     from Cython.Build import cythonize
-    EXTENSIONS = cythonize(EXTENSIONS, annotate=True)
+    EXTENSIONS = cythonize(
+        EXTENSIONS,
+        annotate=True,
+        compiler_directives={'language_level': "3str"}
+    )
 
 
 def readme():

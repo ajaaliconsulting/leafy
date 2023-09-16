@@ -1,4 +1,4 @@
-from graph cimport GraphBase
+from .graph cimport GraphBase
 
 cdef class Dijkstra:
     cdef GraphBase _graph
