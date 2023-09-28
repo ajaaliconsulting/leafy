@@ -1,15 +1,15 @@
 # Leafy Graph Library
-Leafy is a python graph library written in cython. This mix gives the speed of writing
-the library in c with the benefit of python bindings.
+Leafy is a Python graph library written in Cython. This mix gives the speed of writing
+the library in C with the benefit of Python bindings.
 
 ## Usage
 
 ### Graph Objects
-Leafy supports two types of graphs: Dense and Sparse. These are represented by the 
+Leafy supports two types of graphs: dense and sparse. These are represented by the 
 classes `leafy.graph.Graph` and `leafy.graph.SparseGraph`.
 
-To instantiate a graph object we need to know the number of nodes (verticies) in the
-graph, and if the graph is directed. Graphs defualt to undirected.
+To instantiate a graph object we need to know the number of nodes (vertices) in the
+graph, and if the graph is directed. Graphs default to undirected.
 
 ```python
 >>> from leafy.graph import Graph
