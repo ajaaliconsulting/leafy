@@ -1,6 +1,6 @@
 from setuptools import setup, Extension
 
-DEVELOPEMENT_MODE = False
+DEVELOPEMENT_MODE = True
 
 EXTENSIONS = [
     Extension('leafy.data_structure', ['leafy/data_structure.pyx']),
