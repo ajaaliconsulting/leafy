@@ -33,11 +33,10 @@ jobs:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }} x64
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
-          architecture: x64
 
       - name: build package
         run: |
@@ -74,76 +73,3 @@ jobs:
           name: dist-windows-${{ matrix.python-version }}
           path: dist
 
-  publish-pypi:
-    needs: [build-linux, build-macos, build-windows]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Stage linux 3.7
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-linux-cp37-cp37m
-      - name: Stage linux 3.8
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-linux-cp38-cp38
-      - name: Stage linux 3.9
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-linux-cp39-cp39
-      - name: Stage linux 3.10
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-linux-cp310-cp310
-      - name: Stage linux 3.11
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-linux-cp311-cp311
-
-      - name: Stage macos 3.7
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-macos-3.7
-      - name: Stage macos 3.8
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-macos-3.8
-      - name: Stage macos 3.9
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-macos-3.9
-      - name: Stage macos 3.10
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-macos-3.10
-      - name: Stage macos 3.11
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-macos-3.11
-
-      - name: Stage windows 3.7
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-windows-3.7
-      - name: Stage windows 3.8
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-windows-3.8
-      - name: Stage windows 3.9
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-windows-3.9
-      - name: Stage windows 3.10
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-windows-3.10
-      - name: Stage windows 3.11
-        uses: actions/download-artifact@v2
-        with:
-          name: dist-windows-3.11
-
-      - name: Publish a Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          packages_dir: .
