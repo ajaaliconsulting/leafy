@@ -1,13 +1,13 @@
 import pytest
 
-from leafy.graph import SparseGraph
+from leafy.graph import Graph
 from leafy.shortest_path import Dijkstra
 from .utils import disanostics_table
 
 
 @pytest.fixture
 def simple_network():
-    graph = SparseGraph(8, True)
+    graph = Graph(8, True)
     graph.add_edge(0, 1, 0.4)
     graph.add_edge(1, 2, 1.3)
     graph.add_edge(2, 4, 1.7)

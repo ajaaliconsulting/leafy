@@ -4,14 +4,13 @@ Purpose:
 """
 import pytest
 
-from leafy.graph import Graph, SparseGraph
+from leafy.graph import Graph
 from leafy.search import DFS, BFS
 from .utils import disanostics_table
 
-
-def small_graph(graph_type):
-    graph_cls = Graph if graph_type == 'dense' else SparseGraph
-    graph = graph_cls(22)
+@pytest.fixture
+def small_graph():
+    graph = Graph(22)
     graph.add_edge(0, 1)
     graph.add_edge(0, 2)
     graph.add_edge(1, 2)
@@ -41,34 +40,30 @@ def small_graph(graph_type):
     return graph
 
 
-@pytest.fixture(params=['dense', 'sparse'])
-def graph_dfs(request):
-    graph = small_graph(request.param)
-    dfs = DFS(graph, 0)
+@pytest.fixture
+def graph_dfs(small_graph):
+    dfs = DFS(small_graph, 0)
     dfs.run()
     return dfs
 
 
-@pytest.fixture(params=['dense', 'sparse'])
-def graph_bfs(request):
-    graph = small_graph(request.param)
-    bfs = BFS(graph, 0)
+@pytest.fixture
+def graph_bfs(small_graph):
+    bfs = BFS(small_graph, 0)
     bfs.run()
     return bfs
 
 
-@pytest.fixture(params=['dense', 'sparse'])
-def small_graph_dfs(request):
-    graph = small_graph(request.param)
-    dfs = DFS(graph, 16)
+@pytest.fixture
+def small_graph_dfs(small_graph):
+    dfs = DFS(small_graph, 16)
     dfs.run()
     return dfs
 
 
-@pytest.fixture(params=['dense', 'sparse'])
-def small_graph_bfs(request):
-    graph = small_graph(request.param)
-    bfs = BFS(graph, 16)
+@pytest.fixture
+def small_graph_bfs(small_graph):
+    bfs = BFS(small_graph, 16)
     bfs.run()
     return bfs
 

@@ -1,1 +1,1 @@
-from .graph import Graph, SparseGraph
+from .graph import Graph

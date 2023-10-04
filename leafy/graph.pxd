@@ -1,6 +1,6 @@
-from .data_structure cimport AdjacencyList, ArrayIter, LinkedListIter, ArrayIndexIter
+from .data_structure cimport AdjacencyList, LinkedListIter, ArrayIndexIter
 
-cdef class GraphBase:
+cdef class Graph:
     cdef readonly int length
     cdef readonly int edge_count
     cdef bint directed
@@ -11,13 +11,6 @@ cdef class GraphBase:
     cdef ArrayIndexIter sources(self)
     cdef ArrayIndexIter sinks(self)
     cpdef double edge_weight(self, int v, int w)
-
-
-cdef class Graph(GraphBase):
-    cdef double** adj_matrix
-    cpdef ArrayIter nodeiter(self, int node)
-
-
-cdef class SparseGraph(GraphBase):
     cdef readonly AdjacencyList adj_list
-    cpdef LinkedListIter nodeiter(self, int node)
+    cdef LinkedListIter nodeiter(self, int node)
+    cpdef LinkedListIter py_nodeiter(self, int node)

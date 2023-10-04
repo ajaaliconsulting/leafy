@@ -130,7 +130,10 @@ cdef class AdjacencyList:
                 al = al.next
         return ret_list
 
-    cpdef LinkedListIter listiter(self, int index):
+    cdef LinkedListIter listiter(self, int index):
+        return LinkedListIter.create(self._start[index])
+
+    cpdef LinkedListIter py_listiter(self, int index):
         return LinkedListIter.create(self._start[index])
 
 
@@ -140,6 +143,14 @@ cdef class LinkedListIter:
         cdef LinkedListIter lli = LinkedListIter()
         lli.ll = root_link
         return lli
+
+    cdef (int, double) next_node(self):
+        cdef (int, double) val
+        if self.ll is not NULL:
+            val = (self.ll.val, self.ll.weight)
+            self.ll = self.ll.next
+            return val
+        return -100, MAXWEIGHT
 
     def __iter__(self):
         return self

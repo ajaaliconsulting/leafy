@@ -1,8 +1,8 @@
 from cpython.mem cimport PyMem_Free
 cimport cython
 
-from .graph cimport GraphBase
-from .data_structure cimport AdjacencyList, int1dim_to_list, int1dim
+from .graph cimport Graph
+from .data_structure cimport AdjacencyList, int1dim_to_list, int1dim, LinkedListIter
 from .search cimport DFS as _DFS
 
 
@@ -37,7 +37,7 @@ cdef class DFS(_DFS):
 
     """
 
-    def __cinit__(self, GraphBase graph not None, int start_node, int sink_node=-1):
+    def __cinit__(self, Graph graph not None, int start_node, int sink_node=-1):
         self._rts = int1dim(self._graph.length, -1) # Reverse topological sort
         self._cycle = int1dim(self._graph.length, -1)
         self._cross_links = AdjacencyList(self._graph.length)
@@ -110,14 +110,16 @@ cdef class DFS(_DFS):
             return
 
         cdef int w
+        cdef LinkedListIter graph_iter
 
         self._st[v] = st
         self._colour[v] = colour
         self._pre[v] = self._pre_counter
         self._lows[v] = self._pre_counter
         self._pre_counter += 1
-
-        for w, _ in self._graph.nodeiter(v):
+        graph_iter = self._graph.nodeiter(v)
+        w, _ = graph_iter.next_node()
+        while w != -100:
             self._edge_count += 1
             if self._pre[w] == -1:
                 self._tree_links.append(v, w)
@@ -135,6 +137,7 @@ cdef class DFS(_DFS):
                     self._lows[v] = min(self._lows[v], self._pre[w])
                 elif self._pre[v] > self._pre[w] and self._post[v] > self._post[w]:
                     self._cross_links.append(v, w)
+            w, _ = graph_iter.next_node()
 
         if self._pre[v] == 0 and self._tree_links.length(v) > 1:
             self._art[v] = 1
