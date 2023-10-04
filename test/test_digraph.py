@@ -6,7 +6,7 @@ import pytest
 
 from leafy.graph import Graph
 from leafy.digraph import DFS
-from .utils import disanostics_table, dfs_diagnostics
+from .utils import dfs_diagnostics
 
 """
 Test DFS.is_dag

@@ -1,9 +1,9 @@
 from cpython.mem cimport PyMem_Free
 cimport cython
 
-from .graph cimport GraphBase
+from .graph cimport Graph
 from .data_structure cimport (IndexHeapPriorityQueue, MAXWEIGHT, int1dim, double1dim,
-int1dim_to_list, double1dim_to_list, heap_queue)
+int1dim_to_list, double1dim_to_list, heap_queue, LinkedListIter)
 
 
 cdef class Dijkstra:
@@ -40,7 +40,7 @@ cdef class Dijkstra:
 
     """
 
-    def __cinit__(self, GraphBase graph not None, int start_node):
+    def __cinit__(self, Graph graph not None, int start_node):
         assert -1 < start_node < graph.length, "DFS start node must be on the graph."
         assert graph.directed == True
 
@@ -92,11 +92,17 @@ cdef class Dijkstra:
     cdef void _run(self):
         self._wt[self._start_node] = 0.0
         cdef IndexHeapPriorityQueue pqueue = heap_queue(self._wt, self._graph.length, True)
+        cdef LinkedListIter graph_iter
+
         while pqueue.empty() == False:
             v = pqueue.get_next()
             if self._wt[v] != MAXWEIGHT:
-                for i, weight in self._graph.nodeiter(v):
+                graph_iter = self._graph.nodeiter(v)
+                i, weight = graph_iter.next_node()
+                while i != -100:
                     if (self._wt[v] + weight) < self._wt[i]:
                         self._wt[i] = self._wt[v] + weight
                         self._st[i] = v
                         pqueue.change(i)
+                    i, weight = graph_iter.next_node()
+

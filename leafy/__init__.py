@@ -1,4 +1,1 @@
-"""
-Purpose:
-*.
-"""
+from .graph import Graph

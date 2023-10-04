@@ -12,8 +12,8 @@ under each algorithm.
 from cpython.mem cimport PyMem_Free
 cimport cython
 
-from .graph cimport GraphBase
-from .data_structure cimport AdjacencyList, Queue, int1dim, int1dim_to_list
+from .graph cimport Graph
+from .data_structure cimport AdjacencyList, Queue, int1dim, int1dim_to_list, LinkedListIter
 
 cdef class DFS:
     """Depth First Search of a graph starting from a defined node.
@@ -56,7 +56,7 @@ cdef class DFS:
 
     """
 
-    def __cinit__(self, GraphBase graph not None, int start_node, int sink_node=-1):
+    def __cinit__(self, Graph graph not None, int start_node, int sink_node=-1):
         assert -1 < start_node < graph.length, "DFS start node must be on the graph."
         assert -1 <= sink_node < graph.length, "DFS sink node must be on the graph."
 
@@ -207,6 +207,7 @@ cdef class DFS:
             return
 
         cdef int w
+        cdef LinkedListIter graph_iter
 
         self._st[v] = st
         self._colour[v] = colour
@@ -214,7 +215,9 @@ cdef class DFS:
         self._lows[v] = self._pre_counter
         self._pre_counter += 1
 
-        for w, _ in self._graph.nodeiter(v):
+        graph_iter = self._graph.nodeiter(v)
+        w, _ = graph_iter.next_node()
+        while w != -100:
             self._edge_count += 1
             if self._pre[w] == -1:
                 self._tree_links.append(v, w)
@@ -232,6 +235,7 @@ cdef class DFS:
                     self._lows[v] = min(self._lows[v], self._pre[w])
                 else:
                     self._parent_links.append(v, w)
+            w, _ = graph_iter.next_node()
 
         if self._pre[v] == 0 and self._tree_links.length(v) > 1:
             self._art[v] = 1
@@ -244,7 +248,7 @@ cdef class DFS:
 
 
 cdef class BFS:
-    def __cinit__(self, GraphBase graph not None, int start_node, int sink_node=-1):
+    def __cinit__(self, Graph graph not None, int start_node, int sink_node=-1):
         assert -1 < start_node < graph.length, "BFS start node must be on the graph."
         assert -1 <= sink_node < graph.length, "BFS sink node mush be on the graph."
 

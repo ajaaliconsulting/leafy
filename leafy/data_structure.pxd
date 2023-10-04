@@ -23,6 +23,7 @@ cdef class LinkedListIter:
     cdef link *ll
     @staticmethod
     cdef LinkedListIter create(link *root_link)
+    cdef (int, double) next_node(self)
 
 
 cdef class AdjacencyList:
@@ -34,7 +35,8 @@ cdef class AdjacencyList:
     cpdef int length(self, int index)
     cpdef list as_py_list(self)
     cpdef list as_py_pairs(self)
-    cpdef LinkedListIter listiter(self, int index)
+    cdef LinkedListIter listiter(self, int index)
+    cpdef LinkedListIter py_listiter(self, int index)
 
 
 cdef class ArrayIter:

@@ -1,7 +1,7 @@
-from .graph cimport GraphBase
+from .graph cimport Graph
 
 cdef class Dijkstra:
-    cdef GraphBase _graph
+    cdef Graph _graph
     cdef int _start_node
     cdef bint _dij_run
     cdef int *_st

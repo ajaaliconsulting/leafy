@@ -35,7 +35,7 @@ def test_adjacencylist(simple_adj_list):
 
 
 def test_linkedlistiter(simple_adj_list):
-    assert [(2, 1.2), (3, 1.3)] == [i for i in simple_adj_list.listiter(1)]
+    assert [(2, 1.2), (3, 1.3)] == [i for i in simple_adj_list.py_listiter(1)]
 
 
 def test_arrayiter():

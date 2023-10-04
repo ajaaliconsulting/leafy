@@ -1,8 +1,8 @@
-from .graph cimport GraphBase
+from .graph cimport Graph
 from .data_structure cimport AdjacencyList
 
 cdef class DFS:
-    cdef GraphBase _graph
+    cdef Graph _graph
     cdef int _start_node
     cdef int _sink_node
     cdef int *_pre
@@ -27,7 +27,7 @@ cdef class DFS:
 
 
 cdef class BFS:
-    cdef GraphBase _graph
+    cdef Graph _graph
     cdef int _start_node
     cdef int _sink_node
     cdef int *_pre
