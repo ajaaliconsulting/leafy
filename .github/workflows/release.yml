@@ -96,7 +96,7 @@ jobs:
           path: dist
 
   publish-pypi:
-    needs: [build-linux, build-macos, build-windows]
+    needs: [build-linux, build-macos-intel, build-macos-arm, build-windows]
     runs-on: ubuntu-latest
 
     steps:
