@@ -29,6 +29,6 @@ jobs:
           python -m pip install -r build_requirements.txt
           python -m pip install -r test_requirements.txt
           python setup.py build_ext --inplace
-      - name: Test with pytest test
+      - name: Test with pytest
         run: |
-          python -m pytest
+          python -m pytest test
